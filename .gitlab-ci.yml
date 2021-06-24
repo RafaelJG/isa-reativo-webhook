@@ -1,0 +1,113 @@
+# ------------------------
+# SPEC GERAL
+# ------------------------
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_IMAGE_NAME: "$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME"
+  
+# ------------------------
+# BUILD
+# ------------------------
+  
+# cria imagem docker e faz upload para Google Container Registry (de acordo com projeto/ambiente)
+.build-docker:
+  image: docker:latest
+  stage: build
+  only:
+    - dev
+    - hom
+    - master
+  variables:
+    DOCKER_DRIVER: overlay2
+  services:
+    - docker:dind
+  script:
+    - echo Build da imagem docker e envio para o container registry...
+    - echo $GOOGLE_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+    - docker pull gcr.io/${GOOGLE_PROJECT_ID}/${DOCKER_IMAGE_NAME}:latest || true
+    - docker build --cache-from ${DOCKER_IMAGE_NAME}:latest -t ${DOCKER_IMAGE_NAME} .
+    - docker tag ${DOCKER_IMAGE_NAME} gcr.io/${GOOGLE_PROJECT_ID}/${DOCKER_IMAGE_NAME}:latest
+    - docker tag ${DOCKER_IMAGE_NAME} gcr.io/${GOOGLE_PROJECT_ID}/${DOCKER_IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
+    - docker push gcr.io/${GOOGLE_PROJECT_ID}/${DOCKER_IMAGE_NAME}:latest
+    - docker push gcr.io/${GOOGLE_PROJECT_ID}/${DOCKER_IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
+
+build-docker-dev:
+  extends: .build-docker
+  variables:
+    GOOGLE_PROJECT_ID: $GOOGLE_PROJECT_ID_DEV
+    GOOGLE_SERVICE_KEY: $GCLOUD_SERVICE_KEY_DEV
+  only:
+    - dev
+
+build-docker-hom:
+  extends: .build-docker
+  variables:
+    GOOGLE_PROJECT_ID: $GOOGLE_PROJECT_ID_HOM
+    GOOGLE_SERVICE_KEY: $GCLOUD_SERVICE_KEY_HOM
+  only:
+    - hom
+
+build-docker-prod:
+  extends: .build-docker
+  variables:
+    GOOGLE_PROJECT_ID: $GOOGLE_PROJECT_ID_PROD
+    GOOGLE_SERVICE_KEY: $GCLOUD_SERVICE_KEY_PROD
+  only:
+    - master
+
+# ------------------------
+# DEPLOY
+# ------------------------
+
+# faz pull da imagem do container registry e executa container na vm
+.deploy-docker:
+  image: google/cloud-sdk:alpine
+  stage: deploy
+  only:
+    - dev
+    - hom
+    - master
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo Acessando instancia para baixar imagem e executar container...
+    - mkdir -p $CI_PROJECT_DIR/.tmp
+    - echo "$GOOGLE_SERVICE_KEY" > "$CI_PROJECT_DIR/.tmp/gcloud-service-key.json"
+    - gcloud auth activate-service-account --key-file $CI_PROJECT_DIR/.tmp/gcloud-service-key.json
+    - gcloud compute instances list --filter="name ~ '^${INSTANCE}' "  --format='value(format({0} --zone {1}, name, zone) )' --project=$GOOGLE_PROJECT_ID > $CI_PROJECT_DIR/.tmp/instances
+    - while read i; do echo "Atualizando instancia - $i" ; gcloud compute ssh gitlab@$i --command="/opt/apps/$CI_PROJECT_NAME-update.sh" --ssh-flag="-n" --project=$GOOGLE_PROJECT_ID ; done < $CI_PROJECT_DIR/.tmp/instances
+
+deploy-docker-dev:
+  extends: .deploy-docker
+  variables:
+    GOOGLE_PROJECT_ID: $GOOGLE_PROJECT_ID_DEV
+    GOOGLE_SERVICE_KEY: $GCLOUD_SERVICE_KEY_DEV
+    PROFILE: Dev
+    INSTANCE: $INSTANCE_DEV
+  only:
+    - dev
+
+deploy-docker-hom:
+  extends: .deploy-docker
+  variables:
+    GOOGLE_PROJECT_ID: $GOOGLE_PROJECT_ID_HOM
+    GOOGLE_SERVICE_KEY: $GCLOUD_SERVICE_KEY_HOM
+    PROFILE: Hom
+    INSTANCE: $INSTANCE_HOM
+  only:
+    - hom
+  when: manual
+
+deploy-docker-prod:
+  extends: .deploy-docker
+  variables:
+    GOOGLE_PROJECT_ID: $GOOGLE_PROJECT_ID_PROD
+    GOOGLE_SERVICE_KEY: $GCLOUD_SERVICE_KEY_PROD
+    PROFILE: Production
+    INSTANCE: $INSTANCE_PROD
+  only:
+    - master
+  when: manual

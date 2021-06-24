@@ -1,0 +1,16 @@
+dateparser
+flask-basicauth
+flask-cors
+flask-sqlalchemy
+flask
+
+google-cloud-logging
+
+mysqlclient
+
+python-logstash
+
+requests-toolbelt
+requests
+
+six
