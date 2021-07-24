@@ -9,6 +9,7 @@ DATABASE_NAME = config.DATABASE_NAME
 
 
 
+
 # Salva intent id pela session
 def insert_session_intent(id_intent, session_id, db):
 	tabela = f"{DATABASE_NAME}.chat_session_intents"
@@ -22,13 +23,13 @@ def insert_session_intent(id_intent, session_id, db):
 
 def get_faq_ids(db, assunto):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
-	
+
 
 	sql_txt = f"SELECT id FROM {tabela}"
 	result = db.engine.execute(sql_txt)
 	ids =[]
 	for row in result:
-		ids.append(row['id'])
+			ids.append(row['id'])
 	return ids
 
 
@@ -43,10 +44,10 @@ def update_intent_count(id_intent, db):
 	rows = result.fetchone()
 	intent_count = 1
 	if rows:
-		intent_count = int(rows['count']) + 1
-		sql_txt = f"UPDATE {tabela} SET count = {intent_count} WHERE id_intent = '{id_intent}'"
+			intent_count = int(rows['count']) + 1
+			sql_txt = f"UPDATE {tabela} SET count = {intent_count} WHERE id_intent = '{id_intent}'"
 	else:
-		sql_txt = f"INSERT INTO {tabela} (id_intent, count) VALUES ('{id_intent}', {intent_count})"
+			sql_txt = f"INSERT INTO {tabela} (id_intent, count) VALUES ('{id_intent}', {intent_count})"
 
 	sql = text(sql_txt)
 	sql_ok = db_execute_sql(sql, db)
@@ -57,33 +58,33 @@ def update_intent_count(id_intent, db):
 ## Origem pode ser: webchat, aplicatico ou whatsapp
 # def get_origem(user_id, db):
 
-# 	tabela = f"{DATABASE_NAME}.chat_session_origem"
-# 	#sql_txt = f"SELECT origem FROM {tabela} WHERE id_usuario = '{}'".format(tabela, user_id)
-# 	#sql = text(sql_txt)
-# 	result = db.engine.execute(f"""SELECT origem FROM {tabela} WHERE id_usuario = %s""", (user_id, ))
-# 	rows = result.fetchone()
+#       tabela = f"{DATABASE_NAME}.chat_session_origem"
+#       #sql_txt = f"SELECT origem FROM {tabela} WHERE id_usuario = '{}'".format(tabela, user_id)
+#       #sql = text(sql_txt)
+#       result = db.engine.execute(f"""SELECT origem FROM {tabela} WHERE id_usuario = %s""", (user_id, ))
+#       rows = result.fetchone()
 
-# 	origem = ""
-# 	if rows:
-# 		origem = rows['origem']
+#       origem = ""
+#       if rows:
+#               origem = rows['origem']
 
-# 	return origem
+#       return origem
 
 # Recupera fallback count pelo session_id
 def get_fallback_count(session_id, db):
 	fallback_count = 0
 	session_exists = False
 	if session_id:
-		tabela = f"{DATABASE_NAME}.chat_session_fallbacks"
-		#sql_txt = f"SELECT fallback_count from {tabela} WHERE session_id = '{}'".format(session_id)
+			tabela = f"{DATABASE_NAME}.chat_session_fallbacks"
+			#sql_txt = f"SELECT fallback_count from {tabela} WHERE session_id = '{}'".format(session_id)
 
-		#sql = text(sql_txt)
-		result = db.engine.execute(f"""SELECT fallback_count from {tabela} WHERE session_id = %s""", (session_id, ))
-		rows = result.fetchone()
+			#sql = text(sql_txt)
+			result = db.engine.execute(f"""SELECT fallback_count from {tabela} WHERE session_id = %s""", (session_id, ))
+			rows = result.fetchone()
 
-		if rows:
-			session_exists = True
-			fallback_count = rows['fallback_count']
+			if rows:
+					session_exists = True
+					fallback_count = rows['fallback_count']
 
 	return fallback_count, session_exists
 
@@ -92,19 +93,19 @@ def update_fallback_count(session_id, db, reset=False):
 	tabela = f"{DATABASE_NAME}.chat_session_fallbacks"
 	fallback_count, session_exists = get_fallback_count(session_id, db)
 	if reset:
-		print("RESET COUNT TRANSBORDOS")
-		if not session_exists:
-			fallback_count = 0
-			sql_txt_user = "INSERT into {} (session_id, fallback_count) VALUES ('{}', 0)".format(tabela, session_id)
-		else:
-			sql_txt_user = "UPDATE {} SET fallback_count = 0 WHERE session_id = '{}'".format(tabela, session_id)
+			print("RESET COUNT TRANSBORDOS")
+			if not session_exists:
+					fallback_count = 0
+					sql_txt_user = "INSERT into {} (session_id, fallback_count) VALUES ('{}', 0)".format(tabela, session_id)
+			else:
+					sql_txt_user = "UPDATE {} SET fallback_count = 0 WHERE session_id = '{}'".format(tabela, session_id)
 	else:
-		if not session_exists:
-			fallback_count = 1
-			sql_txt_user = "INSERT into {} (session_id, fallback_count) VALUES ('{}', 1)".format(tabela, session_id)
-		else:
-			fallback_count += 1
-			sql_txt_user = "UPDATE {} SET fallback_count = {} WHERE session_id = '{}'".format(tabela, fallback_count, session_id)
+			if not session_exists:
+					fallback_count = 1
+					sql_txt_user = "INSERT into {} (session_id, fallback_count) VALUES ('{}', 1)".format(tabela, session_id)
+			else:
+					fallback_count += 1
+					sql_txt_user = "UPDATE {} SET fallback_count = {} WHERE session_id = '{}'".format(tabela, fallback_count, session_id)
 
 	sql_user = text(sql_txt_user)
 	sql_ok = db_execute_sql(sql_user, db)
@@ -122,7 +123,7 @@ def get_parametro(id_param, db):
 
 	valor = ""
 	if rows:
-		valor = rows['valor']
+			valor = rows['valor']
 
 	return valor
 
@@ -135,18 +136,21 @@ def get_bot_messages(id_message, db):
 
 	messages = []
 	for row in results:
-		messages.append(row['mensagem'])
+			messages.append(row['mensagem'])
 
 	return messages
 
 
 # Retorna as perguntas do faq do coronavírus de acordo com os ids informados
-def get_perguntas(ids, assunto, db):
+def get_perguntas(assunto, db, ids=0):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
-	result = db.engine.execute(f"SELECT pergunta FROM {tabela} where id in ({ids})")
+	if ids:
+			result = db.engine.execute(f"SELECT pergunta FROM {tabela} where id in ({ids})")
+	else:
+			result = db.engine.execute(f"SELECT pergunta FROM {tabela}")
 	perguntas = []
 	for row in result:
-		perguntas.append(row['pergunta'])
+			perguntas.append(row['pergunta'])
 	return perguntas
 
 def get_resposta(id, assunto, db):
@@ -154,7 +158,15 @@ def get_resposta(id, assunto, db):
 	result = db.engine.execute(f"SELECT resposta FROM {tabela} where id = {id}")
 	resposta = ""
 	for row in result:
-		resposta = row['resposta']
+			resposta = row['resposta']
+	return resposta
+
+def get_resposta_from_pergunta(pergunta, assunto, db):
+	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+	result = db.engine.execute(f"SELECT resposta FROM {tabela} where pergunta = '{pergunta}'")
+	resposta = ""
+	for row in result:
+			resposta = row['resposta']
 	return resposta
 
 def get_faq_id_from_ent(user_choice, assunto, db):
@@ -162,8 +174,8 @@ def get_faq_id_from_ent(user_choice, assunto, db):
 	result = db.engine.execute(f"SELECT id FROM {tabela} where faq_ent = '{user_choice}'")
 	id = ""
 	for row in result:
-		id = row['id']
-	return id		
+			id = row['id']
+	return id
 
 # Recupera a intent atual da sessão
 def get_current_intent(session_id, db):
@@ -174,19 +186,19 @@ def get_current_intent(session_id, db):
 	current_intent = ''
 	session_exists = ''
 	if row:
-		current_intent = row['current_intent_id']
-		session_exists =  row['session_id']
+			current_intent = row['current_intent_id']
+			session_exists =  row['session_id']
 	return current_intent, session_exists
-	
+
 # Atualiza no banco a intent atual da sessão
 def update_current_intent(session_id, intent, db):
 	tabela = f"{DATABASE_NAME}.chat_session_current_intent"
 	_ , session_exists = get_current_intent(session_id, db)
 	if session_exists:
-		#"UPDATE {tabela} SET count = {intent_count} WHERE id_intent = '{id_intent}'"
-		sql_text = f"""UPDATE  {tabela} SET current_intent_id = '{intent}' WHERE session_id = '{session_id}'"""
+			#"UPDATE {tabela} SET count = {intent_count} WHERE id_intent = '{id_intent}'"
+			sql_text = f"""UPDATE  {tabela} SET current_intent_id = '{intent}' WHERE session_id = '{session_id}'"""
 	else:
-		sql_text = f"""INSERT INTO  {tabela} (session_id, current_intent_id) VALUES ('{session_id}','{intent}')"""
+			sql_text = f"""INSERT INTO  {tabela} (session_id, current_intent_id) VALUES ('{session_id}','{intent}')"""
 	sql = text(sql_text)
 	sql_ok = db_execute_sql(sql, db)
 	return sql_ok
@@ -202,7 +214,7 @@ def get_intent_description(dialogflow_intent_name, db):
 
 	intent_description = ""
 	if rows:
-		intent_description = rows['intent_description']
+			intent_description = rows['intent_description']
 
 	return intent_description
 
@@ -216,7 +228,7 @@ def get_intent_id(dialogflow_intent_name, db):
 
 	id_intent = ""
 	if rows:
-		id_intent = rows['id_intent']
+			id_intent = rows['id_intent']
 
 	return id_intent
 
@@ -230,7 +242,7 @@ def get_api_url(id_api, db):
 
 	api_url = ""
 	if rows:
-		api_url = rows['api_url']
+			api_url = rows['api_url']
 
 	return api_url
 
@@ -244,7 +256,7 @@ def get_nome_cidade(cod, db):
 	rows = result.fetchone()
 
 	if rows:
-		nome_cidade = rows['cidade']
+			nome_cidade = rows['cidade']
 
 	return nome_cidade
 
@@ -255,13 +267,13 @@ def get_cidade(cidade, db, estado = ""):
 	#sql_txt = "SELECT * FROM ia_chat_carol_test.chat_cidades WHERE cidade LIKE \'" + str(querry) + "\'"
 	#sql = text(sql_txt)
 	if estado:
-		result = db.engine.execute(f"""SELECT * FROM {tabela} WHERE cidade = %s and UF = %s""", (cidade, estado))
+			result = db.engine.execute(f"""SELECT * FROM {tabela} WHERE cidade = %s and UF = %s""", (cidade, estado))
 	else:
-		result = db.engine.execute(f"""SELECT * FROM {tabela} WHERE cidade = %s""", (cidade,))
+			result = db.engine.execute(f"""SELECT * FROM {tabela} WHERE cidade = %s""", (cidade,))
 	rows = result.fetchone()
 
 	if rows:
-		cod_cidade = rows['id']
+			cod_cidade = rows['id']
 
 	return cod_cidade
 
@@ -273,7 +285,7 @@ def check_cidade_estado(cidade, estado, db):
 	rows = result.fetchone()
 
 	if rows:
-		cod_cidade = rows['id']
+			cod_cidade = rows['id']
 
 	return cod_cidade
 
@@ -290,7 +302,7 @@ def get_protocolo(user_id, db):
 
 	protocolo = ""
 	if rows:
-		protocolo = rows['protocolo']
+			protocolo = rows['protocolo']
 
 	return protocolo
 
@@ -307,9 +319,9 @@ def get_preparacao_exames(busca_exame, db):
 
 	result = {}
 	if rows:
-		result['preparacao_exame'] = rows['preparacao_exame']
-		result['mnemonico'] = rows['mnemonico']
-		result['nome_exame'] = rows['nome_exame']
+			result['preparacao_exame'] = rows['preparacao_exame']
+			result['mnemonico'] = rows['mnemonico']
+			result['nome_exame'] = rows['nome_exame']
 
 	return result
 
@@ -325,7 +337,7 @@ def get_exames(busca_exame, db):
 	result = db.engine.execute(sql_txt)
 	exame = [row['nome_exame'] for row in result]
 
-	return exame	
+	return exame
 
 
 def get_detalhes_unidades(busca_bairro, db):
@@ -338,7 +350,7 @@ def get_detalhes_unidades(busca_bairro, db):
 	result = db.engine.execute(sql_txt)
 	unidades = [row['dados_unidade'] + "\n    " + row['link_maps'] for row in result]
 
-	return unidades	
+	return unidades
 
 def get_nome_unidades(busca_bairro, db):
 
@@ -351,7 +363,7 @@ def get_nome_unidades(busca_bairro, db):
 	unidades = [row['nome_unidade'] for row in result]
 
 
-	return unidades	
+	return unidades
 
 
 
@@ -368,34 +380,34 @@ def get_nome_unidades(busca_bairro, db):
 
 
 # def update_info_sessao(session_id, codigo_ben, nome_ben, protocolo, phone_ben, db):
-# 	"""Atualiza plataforma de origem do usuário (web/app/whats)"""
-# 	# Consulta prataforma de origem da sessão
-# 	tabela = f"{DATABASE_NAME}.chat_session_info"
+#       """Atualiza plataforma de origem do usuário (web/app/whats)"""
+#       # Consulta prataforma de origem da sessão
+#       tabela = f"{DATABASE_NAME}.chat_session_info"
 
-# 	if phone_ben:
-# 		sql_txt = f"INSERT INTO {tabela} (session_id, codigo_ben, nome_ben, protocolo, phone_ben) VALUES ('{session_id}', '{codigo_ben}', '{nome_ben}', '{protocolo}', '{phone_ben}')"
-# 	else:
-# 		sql_txt = f"INSERT INTO {tabela} (session_id, codigo_ben, nome_ben, protocolo) VALUES ('{session_id}', '{codigo_ben}', '{nome_ben}', '{protocolo}')"
-# 	sql = text(sql_txt)
-# 	sql_ok = db_execute_sql(sql, db)
+#       if phone_ben:
+#               sql_txt = f"INSERT INTO {tabela} (session_id, codigo_ben, nome_ben, protocolo, phone_ben) VALUES ('{session_id}', '{codigo_ben}', '{nome_ben}', '{protocolo}', '{phone_ben}')"
+#       else:
+#               sql_txt = f"INSERT INTO {tabela} (session_id, codigo_ben, nome_ben, protocolo) VALUES ('{session_id}', '{codigo_ben}', '{nome_ben}', '{protocolo}')"
+#       sql = text(sql_txt)
+#       sql_ok = db_execute_sql(sql, db)
 
-# 	return sql_ok
+#       return sql_ok
 
 # Executa comando SQL
 def db_execute_sql(sql, db, return_id=False):
 	sql_ok = False
 	try:
-		result = db.engine.execute(sql)
-		db.session.commit()
-		sql_ok = True
+			result = db.engine.execute(sql)
+			db.session.commit()
+			sql_ok = True
 	except:
-		sql_ok = False
-		db.session.rollback()
+			sql_ok = False
+			db.session.rollback()
 
 	db.session.close()
 
 	if sql_ok and return_id:
-		last_id = result.lastrowid
-		return sql_ok, last_id
+			last_id = result.lastrowid
+			return sql_ok, last_id
 
 	return sql_ok

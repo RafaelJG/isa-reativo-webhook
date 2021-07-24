@@ -37,9 +37,9 @@ def dialogflow_webhook():
 	response = ""
 	# REMOTE CALLER IP
 	try:
-		ip = request.remote_addr
+			ip = request.remote_addr
 	except Exception as e:
-		print("{}".format(e))
+			print("{}".format(e))
 
 	req = request.get_json(force=True)
 	print()
@@ -65,186 +65,187 @@ def dialogflow_webhook():
 	id_intent = database.get_intent_id(intentName, db)
 	sql_ok, inserted_id = database.insert_session_intent(id_intent, sessionId, db)
 	print("INTENT ID: {}".format(id_intent))
-	
+
 	if id_intent:
-		if id_intent != 'DEFAULT_FALLBACK' and "RETRY" not in id_intent :
-			database.update_fallback_count(sessionId,db, reset=True) 
-		#else:
-		#	response = utils.build_response(followupEventInput='DEFAULT_FALLBACK')
+			if id_intent != 'DEFAULT_FALLBACK' and "RETRY" not in id_intent :
+					database.update_fallback_count(sessionId,db, reset=True)
+			#else:
+			#       response = utils.build_response(followupEventInput='DEFAULT_FALLBACK')
 	if id_intent == 'DEFAULT_FALLBACK':
-		if queryText != 'DEFAULT_FALLBACK':
-			print("\nAconteceu um fallback\n")
-			_ , count =  database.update_fallback_count(sessionId,db)
-			print("Countagem fallback: {}".format(count))
-			print("LIMITE FALLBACK: {}".format(limite_fallback))
-			if count >= limite_fallback:
-				response= utils.build_response(followupEventInput="TRANSBORDO")	
+			if queryText != 'DEFAULT_FALLBACK':
+					print("\nAconteceu um fallback\n")
+					_ , count =  database.update_fallback_count(sessionId,db)
+					print("Countagem fallback: {}".format(count))
+					print("LIMITE FALLBACK: {}".format(limite_fallback))
+					if count >= limite_fallback:
+							response= utils.build_response(followupEventInput="TRANSBORDO")
 	elif id_intent == 'MENU_INICIO' or id_intent == 'MENU':
-		escolha = parameters.get('escolha-menu',"")
-		print('Opção do menu: {}'.format(parameters.get('escolha-menu',"")))
-		if escolha == '1':
-			# montar resposta para ir para a intencao de exames
-			response = utils.build_response(followupEventInput='TRIAGEM_INICIO')
-		elif escolha == '2':
-			# montar resposta para ir para a intencao de exames
-			response = utils.build_menu_perguntas(agent_name, sessionId, "AVC", db)			
-		elif escolha == '3':
-			# montar resposta para ir para a intencao de exames
-			response = utils.build_menu_perguntas(agent_name, sessionId, "POS_AVC", db)
-		elif escolha == '4':
-			# montar resposta para ir para a intencao de exames
-			response = utils.build_menu_perguntas(agent_name, sessionId, "MEDICACAO", db)
-		elif escolha == '5':
-			# montar resposta para ir para a intencao de exames
-			response = utils.build_response(followupEventInput='CURIOSIDADES')
-		elif escolha == '6':
-			# montar resposta para ir para a intencao de exames
-			response = utils.build_response(followupEventInput='SOBRE_ISA')			
-		elif escolha != '':
-			#fallback normal, aceito pela entidade
-			print("Escolha não vazia!!!!!!!")
-			_, count = database.update_fallback_count(sessionId,db, reset=False) 
-			print("CONTAGEM FALLBACK: {}".format(count))
-			print("LIMITE FALLBACK: {}".format(limite_fallback))
-			if count >= int(limite_fallback):
-				response = utils.build_response(followupEventInput='TRANSBORDO')
+			escolha = parameters.get('escolha-menu',"")
+			print('Opção do menu: {}'.format(parameters.get('escolha-menu',"")))
+			if escolha == '1':
+					# montar resposta para ir para a intencao de exames
+					response = utils.build_response(followupEventInput='TRIAGEM_INICIO')
+			elif escolha == '2':
+					# montar resposta para ir para a intencao de exames
+					response = utils.build_menu_perguntas(agent_name, sessionId, "AVC", db)
+			elif escolha == '3':
+					# montar resposta para ir para a intencao de exames
+					response = utils.build_menu_perguntas(agent_name, sessionId, "POS_AVC", db)
+			elif escolha == '4':
+					# montar resposta para ir para a intencao de exames
+					response = utils.build_menu_perguntas(agent_name, sessionId, "MEDICACAO", db)
+			elif escolha == '5':
+					# montar resposta para ir para a intencao de exames
+					response = utils.build_response(followupEventInput='CURIOSIDADES')
+			elif escolha == '6':
+					# montar resposta para ir para a intencao de exames
+					response = utils.build_response(followupEventInput='SOBRE_ISA')
+			elif escolha != '':
+					#fallback normal, aceito pela entidade
+					print("Escolha não vazia!!!!!!!")
+					_, count = database.update_fallback_count(sessionId,db, reset=False)
+					print("CONTAGEM FALLBACK: {}".format(count))
+					print("LIMITE FALLBACK: {}".format(limite_fallback))
+					if count >= int(limite_fallback):
+							response = utils.build_response(followupEventInput='TRANSBORDO')
+					else:
+							response = utils.build_response(followupEventInput='MENU_RETRY')
 			else:
-				response = utils.build_response(followupEventInput='MENU_RETRY')
-		else:
-			# não foi aceito pela entidade, entrou por evento ou entrou na funcionalidade por gatilho
-			print("Escolha vazia!!!!!!!")
-			detection_confidence = float(queryResult.get('intentDetectionConfidence', -1))
-			print("DETECTION CONFIDENCE: {}".format(detection_confidence))
-			if(queryText != 'MENU_RETRY' and detection_confidence < 0.3): #entrou por evento ou entrou por gatilho
-				print("Entrou no if")
-				_, count = database.update_fallback_count(sessionId,db, reset=False)  # se não foi nenhum desses casos, é realmente um fallback
-				print("CONTAGEM FALLBACK: {}".format(count))
-				print("LIMITE FALLBACK: {}".format(limite_fallback))
-				if count >= int(limite_fallback):
-					response = utils.build_response(followupEventInput='TRANSBORDO')
-				else:
-					response = utils.build_response(followupEventInput='MENU_RETRY')
+					# não foi aceito pela entidade, entrou por evento ou entrou na funcionalidade por gatilho
+					print("Escolha vazia!!!!!!!")
+					detection_confidence = float(queryResult.get('intentDetectionConfidence', -1))
+					print("DETECTION CONFIDENCE: {}".format(detection_confidence))
+					if(queryText != 'MENU_RETRY' and detection_confidence < 0.3): #entrou por evento ou entrou por gatilho
+							print("Entrou no if")
+							_, count = database.update_fallback_count(sessionId,db, reset=False)  # se não foi nenhum desses casos, é realmente um fallback
+							print("CONTAGEM FALLBACK: {}".format(count))
+							print("LIMITE FALLBACK: {}".format(limite_fallback))
+							if count >= int(limite_fallback):
+									response = utils.build_response(followupEventInput='TRANSBORDO')
+							else:
+									response = utils.build_response(followupEventInput='MENU_RETRY')
+					else:
+							print("qualquer coisa")
+	elif id_intent == 'TRIAGEM_INICIO':
+			triagem_context = utils.get_specific_context(outputContexts, "inicio-triagem")
+			params = triagem_context.get("parameters", {})
+			escolha_triagem = params.get("escolha-triagem", "")
+			if escolha_triagem == "continuar":
+					response = utils.build_response(followupEventInput='TRIAGEM_SAMU')
+			elif escolha_triagem == "emergencia":
+					response = utils.build_response(followupEventInput='CHAMOU_EMERGENCIA')
+	elif id_intent == 'CHAMOU_EMERGENCIA':
+			emergencia_context = utils.get_specific_context(outputContexts, "chamou-emergencia")
+			params = emergencia_context.get("parameters", {})
+			ajudar_mais = params.get("ajudar-mais", "")
+			if ajudar_mais == "sim":
+					response = utils.build_response(followupEventInput='MENU')
+			elif ajudar_mais == "não":
+					response = utils.build_response(followupEventInput='ENCERRAMENTO')
+	elif id_intent == 'FAQ_AVC':
+			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-avc")
+			params = avc_context.get("parameters")
+			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "AVC", db)
+	elif id_intent == 'FAQ_POS_AVC':
+			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-pos-avc")
+			params = avc_context.get("parameters")
+			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "POS_AVC", db)
+	elif id_intent == 'FAQ_MEDICACAO':
+			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
+			params = avc_context.get("parameters")
+			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "MEDICACAO", db)
+	elif id_intent == 'FAQ_AVC_RESPOSTA':
+			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-avc")
+			params = avc_context.get("parameters")
+			ajudar_mais = params.get("escolha-ajudar-mais", "")
+			print("ajudar mais: {}".format(ajudar_mais))
+			if ajudar_mais == "sim":
+					response = utils.build_menu_perguntas(agent_name, sessionId, "AVC", db)
+			elif ajudar_mais == "não":
+					response = utils.build_response(followupEventInput='MENU')
+	elif id_intent == 'FAQ_POS_AVC_RESPOSTA':
+			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-pos-avc")
+			params = avc_context.get("parameters")
+			ajudar_mais = params.get("escolha-ajudar-mais", "")
+			print("ajudar mais: {}".format(ajudar_mais))
+			if ajudar_mais == "sim":
+					response = utils.build_menu_perguntas(agent_name, sessionId, "POS_AVC", db)
+			elif ajudar_mais == "não":
+					response = utils.build_response(followupEventInput='MENU')
+	elif id_intent == 'FAQ_MEDICACAO_RESPOSTA':
+			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
+			params = avc_context.get("parameters")
+			ajudar_mais = params.get("escolha-ajudar-mais", "")
+			print("ajudar mais: {}".format(ajudar_mais))
+			if ajudar_mais == "sim":
+					response = utils.build_menu_perguntas(agent_name, sessionId, "MEDICACAO", db)
+			elif ajudar_mais == "não":
+					response = utils.build_response(followupEventInput='MENU')
+
+	elif id_intent == 'TRIAGEM_SAMU':
+			triagem_context = utils.get_specific_context(outputContexts, "triagem-followup")
+			params = triagem_context.get("parameters", {})
+			abraco = params.get("abraco", "")
+			sorriso = params.get("sorriso", "")
+			musica = params.get("musica", "")
+			triagem = 0
+			if abraco == "sim":
+					triagem += 1
+			if sorriso == "sim":
+					triagem += 1
+			if musica == "sim":
+					triagem += 1
+			if triagem <= 1:
+					response = utils.build_response(followupEventInput='TRIAGEM_GERAL')
 			else:
-				print("qualquer coisa")	
-	elif id_intent == 'TRIAGEM_INICIO':	
-		triagem_context = utils.get_specific_context(outputContexts, "inicio-triagem")
-		params = triagem_context.get("parameters", {})
-		escolha_triagem = params.get("escolha-triagem", "")
-		if escolha_triagem == "continuar":
-			response = utils.build_response(followupEventInput='TRIAGEM_SAMU')
-		elif escolha_triagem == "emergencia":
-			response = utils.build_response(followupEventInput='CHAMOU_EMERGENCIA')		
-	elif id_intent == 'CHAMOU_EMERGENCIA':		
-		emergencia_context = utils.get_specific_context(outputContexts, "chamou-emergencia")
-		params = emergencia_context.get("parameters", {})
-		ajudar_mais = params.get("ajudar-mais", "")			
-		if ajudar_mais == "sim":
-			response = utils.build_response(followupEventInput='MENU')
-		elif ajudar_mais == "não":
-			response = utils.build_response(followupEventInput='ENCERRAMENTO')			
-	elif id_intent == 'FAQ_AVC':	
-		avc_context = utils.get_specific_context(outputContexts, "perguntas-context-avc")
-		params = avc_context.get("parameters")
-		response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "AVC", db)
-	elif id_intent == 'FAQ_POS_AVC':	
-		avc_context = utils.get_specific_context(outputContexts, "perguntas-context-pos-avc")
-		params = avc_context.get("parameters")
-		response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "POS_AVC", db)
-	elif id_intent == 'FAQ_MEDICACAO':	
-		avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
-		params = avc_context.get("parameters")
-		response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "MEDICACAO", db)
-	elif id_intent == 'FAQ_AVC_RESPOSTA':	
-		avc_context = utils.get_specific_context(outputContexts, "perguntas-context-avc")
-		params = avc_context.get("parameters")
-		ajudar_mais = params.get("escolha-ajudar-mais", "")		
-		print("ajudar mais: {}".format(ajudar_mais))	
-		if ajudar_mais == "sim":
-			response = utils.build_response(followupEventInput='FAQ_AVC')
-		elif ajudar_mais == "não":
-			response = utils.build_response(followupEventInput='MENU')	
-	elif id_intent == 'FAQ_POS_AVC_RESPOSTA':	
-		avc_context = utils.get_specific_context(outputContexts, "perguntas-context-pos-avc")
-		params = avc_context.get("parameters")
-		ajudar_mais = params.get("escolha-ajudar-mais", "")		
-		print("ajudar mais: {}".format(ajudar_mais))	
-		if ajudar_mais == "sim":
-			response = utils.build_response(followupEventInput='FAQ_POS_AVC')
-		elif ajudar_mais == "não":
-			response = utils.build_response(followupEventInput='MENU')	
-	elif id_intent == 'FAQ_MEDICACAO_RESPOSTA':	
-		avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
-		params = avc_context.get("parameters")
-		ajudar_mais = params.get("escolha-ajudar-mais", "")		
-		print("ajudar mais: {}".format(ajudar_mais))	
-		if ajudar_mais == "sim":
-			response = utils.build_response(followupEventInput='FAQ_MEDICACAO')
-		elif ajudar_mais == "não":
-			response = utils.build_response(followupEventInput='MENU')									
-	elif id_intent == 'TRIAGEM_SAMU':	
-		triagem_context = utils.get_specific_context(outputContexts, "triagem-followup")
-		params = triagem_context.get("parameters", {})
-		abraco = params.get("abraco", "")
-		sorriso = params.get("sorriso", "")
-		musica = params.get("musica", "")
-		triagem = 0
-		if abraco == "sim":
-			triagem += 1
-		if sorriso == "sim":
-			triagem += 1
-		if musica == "sim":
-			triagem += 1
-		if triagem <= 1:
-			response = utils.build_response(followupEventInput='TRIAGEM_GERAL')
-		else:
-			response = utils.build_response(followupEventInput='TRIAGEM_EMERGENCIA')
-	elif id_intent == 'TRIAGEM_GERAL':	
-		triagem_context = utils.get_specific_context(outputContexts, "triagem-followup")
-		params = triagem_context.get("parameters", {})
-		abraco = params.get("abraco", "")
-		sorriso = params.get("sorriso", "")
-		musica = params.get("musica", "")		
-		tontura = params.get("tontura", "")
-		formigamento = params.get("formigamento", "")
-		visao = params.get("visao", "")
-		dorcabeca = params.get("dorcabeca", "")
-		triagem = 0
-		if tontura == "sim":
-			triagem += 1
-		if formigamento == "sim":
-			triagem += 1
-		if visao == "sim":			
-			triagem += 1
-		if abraco == "sim":
-			triagem += 3
-		if sorriso == "sim":
-			triagem += 3
-		if musica == "sim":
-			triagem += 3
-		if dorcabeca == "sim":
-			triagem += 1						
-		if triagem <= 5:
-			response = utils.build_response(followupEventInput='TRIAGEM_24H')
-		else:
-			response = utils.build_response(followupEventInput='TRIAGEM_EMERGENCIA')		
-	elif id_intent == 'TRIAGEM_24H':	
-		triagem_context = utils.get_specific_context(outputContexts, "triagem-followup")
-		params = triagem_context.get("parameters", {})	
-		triagem_ait = params.get("triagem_ait", "")	
-		if triagem_ait == "sim":
-			response = utils.build_response(followupEventInput='TRIAGEM_AIT_FOLLOW')	
-		else:	
-			response = utils.build_response(followupEventInput='TRIAGEM_NO_AIT')	
+					response = utils.build_response(followupEventInput='TRIAGEM_EMERGENCIA')
+	elif id_intent == 'TRIAGEM_GERAL':
+			triagem_context = utils.get_specific_context(outputContexts, "triagem-followup")
+			params = triagem_context.get("parameters", {})
+			abraco = params.get("abraco", "")
+			sorriso = params.get("sorriso", "")
+			musica = params.get("musica", "")
+			tontura = params.get("tontura", "")
+			formigamento = params.get("formigamento", "")
+			visao = params.get("visao", "")
+			dorcabeca = params.get("dorcabeca", "")
+			triagem = 0
+			if tontura == "sim":
+					triagem += 1
+			if formigamento == "sim":
+					triagem += 1
+			if visao == "sim":
+					triagem += 1
+			if abraco == "sim":
+					triagem += 3
+			if sorriso == "sim":
+					triagem += 3
+			if musica == "sim":
+					triagem += 3
+			if dorcabeca == "sim":
+					triagem += 1
+			if triagem <= 5:
+					response = utils.build_response(followupEventInput='TRIAGEM_24H')
+			else:
+					response = utils.build_response(followupEventInput='TRIAGEM_EMERGENCIA')
+	elif id_intent == 'TRIAGEM_24H':
+			triagem_context = utils.get_specific_context(outputContexts, "triagem-followup")
+			params = triagem_context.get("parameters", {})
+			triagem_ait = params.get("triagem_ait", "")
+			if triagem_ait == "sim":
+					response = utils.build_response(followupEventInput='TRIAGEM_AIT_FOLLOW')
+			else:
+					response = utils.build_response(followupEventInput='TRIAGEM_NO_AIT')
 	elif id_intent == 'TRIAGEM_EMERGENCIA':
-		print("emergencia samu")
-		emergencia_context = utils.get_specific_context(outputContexts, "emergencia")
-		params = emergencia_context.get("parameters", {})
-		ajudar_mais = params.get("ajudar-mais", "")		
-		print("ajudar mais: {}".format(ajudar_mais))	
-		if ajudar_mais == "sim":
-			response = utils.build_response(followupEventInput='MENU_INICIO')
-		elif ajudar_mais == "não":
-			response = utils.build_response(followupEventInput='ENCERRAMENTO')			
+			print("emergencia samu")
+			emergencia_context = utils.get_specific_context(outputContexts, "emergencia")
+			params = emergencia_context.get("parameters", {})
+			ajudar_mais = params.get("ajudar-mais", "")
+			print("ajudar mais: {}".format(ajudar_mais))
+			if ajudar_mais == "sim":
+					response = utils.build_response(followupEventInput='MENU_INICIO')
+			elif ajudar_mais == "não":
+					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 
 
 
