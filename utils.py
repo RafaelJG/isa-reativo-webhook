@@ -296,12 +296,10 @@ def check_similaridade_perguntas(user_query, assunto, db):
 					lista_s = normalizar(pergunta).split()
 					print("pergunta split: {}".format(lista_s))
 					for n, texto_pergunta in enumerate(lista_s):
-
 							similaridade = similar(normalizar_palavra(query), normalizar_palavra(texto_pergunta))
 							if similaridade >= similaridade_perguntas:
 									voting_count = voting[i][1]
 									voting[i][1] += round(similaridade, 4)
-
 	voting = sorted(voting, key=itemgetter(1), reverse=True)
 	max_vote = voting[0][1]
 	print("LISTA VOTING: {}".format(voting))
@@ -336,3 +334,16 @@ def normalizar(text):
 	stripped = text.lower().translate(table)
 	stripped = re.sub('\s+', ' ', stripped).strip()
 	return stripped
+
+
+def get_mensagem_dia(agent_name, session_id, db):
+	#total = database.get_total_mensagens_dia(db)
+	ids_list =  database.get_mensagens_dia_ids(db)
+	sorteio = sorted(random.sample(ids_list, 1))
+	ids = ','.join([str(i) for i in sorteio])
+	mensagem = database.get_mensagem_dia(ids, db)
+	params = {}
+	params['mensagem_dia'] = mensagem
+	new_context = utils.build_new_context(agent_name, session_id, "mensagem-dia-context", 5, context_params=params)
+	response = utils.build_response(followupEventInput='MENSAGEM_DO_DIA', outputContexts=new_context)
+	return response

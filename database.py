@@ -21,6 +21,40 @@ def insert_session_intent(id_intent, session_id, db):
 	return sql_ok, lastrowid
 
 
+
+def get_total_mensagens_dia(db):
+	tabela = f"{DATABASE_NAME}.chat_mensagem_dia"
+	result = f"SELECT count(*) FROM {tabela}"
+
+	for row in result:
+			resposta = row[0]
+
+			print(resposta)
+	return resposta
+
+# Salva intent id pela session
+def get_mensagem_dia(id_mensagem, db):
+	tabela = f"{DATABASE_NAME}.chat_mensagem_dia"
+	result = db.engine.execute(f"SELECT mensagem FROM {tabela} where id = {id_mensagem}")
+	resposta = ""
+	for row in result:
+			resposta = row['mensagem']
+	return resposta
+
+def get_mensagens_dia_ids(db):
+	tabela = f"{DATABASE_NAME}.chat_mensagem_dia"
+
+
+	sql_txt = f"SELECT id FROM {tabela}"
+	result = db.engine.execute(sql_txt)
+	ids =[]
+	for row in result:
+			ids.append(row['id'])
+	return ids
+
+
+
+
 def get_faq_ids(db, assunto):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
 
