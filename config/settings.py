@@ -17,12 +17,12 @@ class DevConfig(BaseConfig):
 	FLASK_ENV = 'dev'
 	LOGSTASH_AMBIENTE = "test"
 	LOGSTASH_EXTRA = {
-		"appName": "chatbot-ia-laboratorios-webhook",
+		"appName": "isa-reativo-webhook",
 		"profile": "test"
 	}
 	URL_ADMIN = "https://adm-test.appunimed.com" 
 	DATABASE_NAME = "isa_reativo"
-	SQLALCHEMY_DATABASE_URI =  "mysql://chatbot_isa:chatbot-isa-secret-key@host.docker.internal:3316/isa_reativo"
+	SQLALCHEMY_DATABASE_URI =  "mysql://iaunivision:ia-univision-secret-key@sql-proxy:3309/isa_reativo"
 	LOGSTASH_HOST = "10.128.0.10"
 	AUTHORIZATION = "Y2hhdGJvdC1pYTpjaGF0Ym90LWlhLXNlY3JldC1rZXk="
 	API_TIMEOUT_LIMIT = 5
