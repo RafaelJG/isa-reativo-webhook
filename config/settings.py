@@ -21,8 +21,8 @@ class DevConfig(BaseConfig):
 		"profile": "test"
 	}
 	URL_ADMIN = "https://adm-test.appunimed.com" 
-	DATABASE_NAME = "isa_reativo"
-	SQLALCHEMY_DATABASE_URI =  "mysql://iaunivision:ia-univision-secret-key@sql-proxy:3309/isa_reativo"
+	DATABASE_NAME = "isa_reativo_dev"
+	SQLALCHEMY_DATABASE_URI =  "mysql://iaunivision:ia-univision-secret-key@sql-proxy:3309/isa_reativo_dev"
 	LOGSTASH_HOST = "10.128.0.10"
 	AUTHORIZATION = "Y2hhdGJvdC1pYTpjaGF0Ym90LWlhLXNlY3JldC1rZXk="
 	API_TIMEOUT_LIMIT = 5
