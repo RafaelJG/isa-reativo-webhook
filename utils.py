@@ -249,6 +249,9 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db):
 							else:
 									params = {}
 									resposta_faq = database.get_resposta(id, assunto, db)
+									if assunto == "DICAS":
+										link_faq = database.get_link_FAQ(id, assunto, db)
+										resposta_faq = resposta_faq + "\nAcesse esse conteúdo completo em: " + link_faq
 									pergunta_faq = database.get_perguntas(assunto, db, id)
 									params['resposta_faq'] = resposta_faq.strip()
 									params['pergunta_faq'] = pergunta_faq[0].strip()
