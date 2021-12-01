@@ -216,7 +216,7 @@ def build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = Fals
 	response = header_exemplos + '\n' + menu_exemplos
 
 	params = {}
-	params['ids'] = ids + ',X'
+	params['ids'] = ids + ',X' + ',Y'
 	params['nros_menu'] = nros_list
 	params['header'] = header_exemplos
 	params['response'] = response
@@ -250,6 +250,8 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db):
 									event = '{}_FAQ'.format(assunto)
 									new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 100, context_params=params)
 									response = build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = True)
+							if id == 'Y':
+									response = utils.build_response(followupEventInput='MENU')								
 							else:
 									params = {}
 									resposta_faq = database.get_resposta(id, assunto, db)
