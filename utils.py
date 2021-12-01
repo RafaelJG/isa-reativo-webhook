@@ -250,7 +250,7 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db):
 									event = '{}_FAQ'.format(assunto)
 									new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 100, context_params=params)
 									response = build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = True)
-							if id == 'Y':
+							elif id == 'Y':
 									response = utils.build_response(followupEventInput='MENU')								
 							else:
 									params = {}
