@@ -198,11 +198,12 @@ def build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = Fals
 	sorteio = sorted(random.sample(ids_list, n))
 
 
-	nros_list = ','.join([str(i) for i in range(1,n+2)])
+	nros_list = ','.join([str(i) for i in range(1,n+3)])
 	ids = ','.join([str(i) for i in sorteio])
 
 	perguntas = database.get_perguntas(assunto, db, ids)
 	perguntas.append('Outros assuntos.')
+	perguntas.append('Voltar ao menu')
 
 	#if outros_list:
 	header_exemplos = "Estes são alguns assuntos que posso te responder:"
@@ -236,6 +237,9 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db):
 	if ('outr' in user_choice.lower() or 'assunto' in  user_choice.lower()):
 			new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 0)
 			response = build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = True)
+
+	if ('menu' in user_choice.lower() or 'voltar' in  user_choice.lower()):
+			response = utils.build_response(followupEventInput='MENU')			
 	else:
 			try:
 					# tentar dar cast no nro, se falhar a resposta está escrita por extenso
