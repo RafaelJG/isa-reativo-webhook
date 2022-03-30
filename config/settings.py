@@ -17,12 +17,12 @@ class DevConfig(BaseConfig):
 	FLASK_ENV = 'dev'
 	LOGSTASH_AMBIENTE = "test"
 	LOGSTASH_EXTRA = {
-		"appName": "isa-reativo-webhook",
+		"appName": "chatbot-isa-webhook",
 		"profile": "test"
 	}
 	URL_ADMIN = "https://adm-test.appunimed.com" 
-	DATABASE_NAME = "isa_reativo_dev"
-	SQLALCHEMY_DATABASE_URI =  "mysql://iaunivision:ia-univision-secret-key@sql-proxy:3309/isa_reativo_dev"
+	DATABASE_NAME = "chatbot_isa"
+	SQLALCHEMY_DATABASE_URI =  "mysql://isa-db-dev:isa-dev-secret-key@sql-proxy:3309/chatbot_isa"
 	LOGSTASH_HOST = "10.128.0.10"
 	AUTHORIZATION = "Y2hhdGJvdC1pYTpjaGF0Ym90LWlhLXNlY3JldC1rZXk="
 	API_TIMEOUT_LIMIT = 5
@@ -35,13 +35,7 @@ class HomConfig(BaseConfig):
 		"appName": "chatbot-ia-laboratorios-webhook",
 		"profile": "hom"
 	}
-	URL_ADMIN = "https://adm-test.appunimed.com" 
-	DATABASE_NAME = "ia_chat_laboratorios_hom"
-	SQLALCHEMY_DATABASE_URI =  "mysql://iaunivision:ia-univision-secret-key@sql-proxy:3311/ia_chat_laboratorios_hom"
-	LOGSTASH_HOST = "10.128.0.10"
-	AUTHORIZATION = "Y2hhdGJvdC1pYTpjaGF0Ym90LWlhLXNlY3JldC1rZXk="
-	API_TIMEOUT_LIMIT = 5
-
+	
 
 
 class ProductionConfig(BaseConfig):
@@ -52,12 +46,7 @@ class ProductionConfig(BaseConfig):
 		"appName": "chatbot-ia-laboratorios-webhook",
 		"profile": "prod"
 	}
-	URL_ADMIN = "https://adm-test.appunimed.com" 
-	DATABASE_NAME = "ia_chat_laboratorios"
-	SQLALCHEMY_DATABASE_URI =  "mysql://iaunivision:ia-univision-secret-key@sql-proxy:3309/ia_chat_laboratorios"
-	LOGSTASH_HOST = "vm-elk-2.us-east1-d.c.ucwbmobile-hom.internal"
-	AUTHORIZATION = "Y2hhdGJvdC1pYTpjaGF0Ym90LWlhLXNlY3JldC1rZXk="
-	API_TIMEOUT_LIMIT = 5
+	
 
 
 
