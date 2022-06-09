@@ -198,11 +198,12 @@ def build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = Fals
 	sorteio = sorted(random.sample(ids_list, n))
 
 
-	nros_list = ','.join([str(i) for i in range(1,n+2)])
+	nros_list = ','.join([str(i) for i in range(1,n+3)])
 	ids = ','.join([str(i) for i in sorteio])
 
 	perguntas = database.get_perguntas(assunto, db, ids)
 	perguntas.append('Outros assuntos.')
+	perguntas.append('Voltar ao menu')
 
 	#if outros_list:
 	header_exemplos = "Estes são alguns assuntos que posso te responder:"
@@ -215,7 +216,7 @@ def build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = Fals
 	response = header_exemplos + '\n' + menu_exemplos
 
 	params = {}
-	params['ids'] = ids + ',X'
+	params['ids'] = ids + ',X' + ',Y'
 	params['nros_menu'] = nros_list
 	params['header'] = header_exemplos
 	params['response'] = response
@@ -236,6 +237,9 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db):
 	if ('outr' in user_choice.lower() or 'assunto' in  user_choice.lower()):
 			new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 0)
 			response = build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = True)
+
+	if ('menu' in user_choice.lower() or 'voltar' in  user_choice.lower()):
+			response = utils.build_response(followupEventInput='MENU')			
 	else:
 			try:
 					# tentar dar cast no nro, se falhar a resposta está escrita por extenso
@@ -246,9 +250,14 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db):
 									event = '{}_FAQ'.format(assunto)
 									new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 100, context_params=params)
 									response = build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = True)
+							elif id == 'Y':
+									response = utils.build_response(followupEventInput='MENU')								
 							else:
 									params = {}
 									resposta_faq = database.get_resposta(id, assunto, db)
+									if assunto == "DICAS":
+										link_faq = database.get_link_FAQ(id, assunto, db)
+										resposta_faq = resposta_faq + "\nAcesse esse conteúdo completo em: " + link_faq
 									pergunta_faq = database.get_perguntas(assunto, db, id)
 									params['resposta_faq'] = resposta_faq.strip()
 									params['pergunta_faq'] = pergunta_faq[0].strip()
@@ -296,12 +305,10 @@ def check_similaridade_perguntas(user_query, assunto, db):
 					lista_s = normalizar(pergunta).split()
 					print("pergunta split: {}".format(lista_s))
 					for n, texto_pergunta in enumerate(lista_s):
-
 							similaridade = similar(normalizar_palavra(query), normalizar_palavra(texto_pergunta))
 							if similaridade >= similaridade_perguntas:
 									voting_count = voting[i][1]
 									voting[i][1] += round(similaridade, 4)
-
 	voting = sorted(voting, key=itemgetter(1), reverse=True)
 	max_vote = voting[0][1]
 	print("LISTA VOTING: {}".format(voting))
@@ -336,3 +343,16 @@ def normalizar(text):
 	stripped = text.lower().translate(table)
 	stripped = re.sub('\s+', ' ', stripped).strip()
 	return stripped
+
+
+def get_mensagem_dia(agent_name, session_id, db):
+	#total = database.get_total_mensagens_dia(db)
+	ids_list =  database.get_mensagens_dia_ids(db)
+	sorteio = sorted(random.sample(ids_list, 1))
+	ids = ','.join([str(i) for i in sorteio])
+	mensagem = database.get_mensagem_dia(ids, db)
+	params = {}
+	params['mensagem_dia'] = mensagem
+	new_context = utils.build_new_context(agent_name, session_id, "mensagem-dia-context", 5, context_params=params)
+	response = utils.build_response(followupEventInput='MENSAGEM_DO_DIA', outputContexts=new_context)
+	return response
