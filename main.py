@@ -163,14 +163,7 @@ def dialogflow_webhook():
 			params = avc_context.get("parameters")
 			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "MEDICACAO", db)
 	elif id_intent == 'MENSAGEM_DO_DIA':
-		context = utils.get_specific_context(outputContexts, "mensagem-dia-context")
-		params = context.get("parameters")
-		ajudar_mais = params.get("escolha-ajudar-mais", "")
-		print("ajudar mais: {}".format(ajudar_mais))
-		if ajudar_mais == "sim":
-				response = utils.build_menu_perguntas(agent_name, sessionId, "MENU", db)
-		elif ajudar_mais == "não":
-				response = utils.build_response(followupEventInput='ENCERRAMENTO')						
+			response = utils.build_response(followupEventInput='AJUDAR_MAIS')						
 	elif id_intent == 'FAQ_AVC_RESPOSTA':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-avc")
 			params = avc_context.get("parameters")
@@ -272,6 +265,18 @@ def dialogflow_webhook():
 					response = utils.build_response(followupEventInput='MENU_INICIO')
 			elif ajudar_mais == "não":
 					response = utils.build_response(followupEventInput='ENCERRAMENTO')
+
+	elif id_intent == 'AJUDAR_MAIS':
+			print("emergencia samu")
+			ajudar_mais_context = utils.get_specific_context(outputContexts, "ajudar-mais")
+			params = ajudar_mais_context.get("parameters", {})
+			ajudar_mais = params.get("ajudar-mais", "")
+			print("ajudar mais: {}".format(ajudar_mais))
+			if ajudar_mais == "sim":
+					response = utils.build_response(followupEventInput='MENU_INICIO')
+			elif ajudar_mais == "não":
+					response = utils.build_response(followupEventInput='ENCERRAMENTO')
+
 
 
 
