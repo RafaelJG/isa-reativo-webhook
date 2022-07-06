@@ -162,6 +162,15 @@ def dialogflow_webhook():
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
 			params = avc_context.get("parameters")
 			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "MEDICACAO", db)
+	elif id_intent == 'SOBRE_ISA':
+		context = utils.get_specific_context(outputContexts, "sobre-isa-context")
+		params = context.get("parameters")
+		ajudar_mais = params.get("escolha-ajudar-mais", "")
+		print("ajudar mais: {}".format(ajudar_mais))
+		if ajudar_mais == "sim":
+				response = utils.build_response(followupEventInput='MENU')
+		elif ajudar_mais == "não":
+				response = utils.build_response(followupEventInput='ENCERRAMENTO')					
 	elif id_intent == 'MENSAGEM_DO_DIA':
 		context = utils.get_specific_context(outputContexts, "mensagem-dia-context")
 		params = context.get("parameters")
