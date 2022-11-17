@@ -81,6 +81,9 @@ def dialogflow_webhook():
 							response= utils.build_response(followupEventInput="TRANSBORDO")
 	elif id_intent == 'MENU_INICIO' or id_intent == 'MENU':
 			escolha = parameters.get('escolha-menu',"")
+			if id_intent == 'MENU_INICIO':
+				joinvasc = parameters.get('joinvasc',"")
+				database.insert_joinvasc(sessionId, joinvasc, db)
 			print('Opção do menu: {}'.format(parameters.get('escolha-menu',"")))
 			if escolha == '1':
 					# montar resposta para ir para a intencao de exames
@@ -291,7 +294,7 @@ def dialogflow_webhook():
 			pergunta = "blahhh"
 			database.insert_pesquisa(sessionId, pergunta, pesquisa, db)
 			if ajudar_mais == "sim":
-					response = utils.build_response(followupEventInput='MENU_INICIO')
+					response = utils.build_response(followupEventInput='MENU')
 			elif ajudar_mais == "não":
 					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 
@@ -302,7 +305,7 @@ def dialogflow_webhook():
 			ajudar_mais = params.get("ajudar-mais", "")
 			print("ajudar mais: {}".format(ajudar_mais))
 			if ajudar_mais == "sim":
-					response = utils.build_response(followupEventInput='MENU_INICIO')
+					response = utils.build_response(followupEventInput='MENU')
 			elif ajudar_mais == "não":
 					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 	elif id_intent == 'PESQUISA':

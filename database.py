@@ -30,6 +30,15 @@ def insert_pesquisa(session_id, pergunta, resposta, db):
 
 	return sql_ok, lastrowid
 
+def insert_joinvasc(session_id, joinvasc, db):
+	tabela = f"{DATABASE_NAME}.chat_joinvasc_info"
+	sql_txt = f"INSERT INTO {tabela} (session_id, joinvasc) VALUES ('{session_id}', '{joinvasc}')"
+
+	sql = text(sql_txt)
+	sql_ok, lastrowid = db_execute_sql(sql, db, return_id=True)
+
+	return sql_ok, lastrowid	
+
 
 
 def get_total_mensagens_dia(db):
