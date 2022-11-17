@@ -21,6 +21,16 @@ def insert_session_intent(id_intent, session_id, db):
 	return sql_ok, lastrowid
 
 
+def insert_pesquisa(session_id, pergunta, resposta, db):
+	tabela = f"{DATABASE_NAME}.chat_pesquisa"
+	sql_txt = f"INSERT INTO {tabela} (session_id, pergunta, resposta) VALUES ('{session_id}', '{pergunta}', '{resposta}')"
+
+	sql = text(sql_txt)
+	sql_ok, lastrowid = db_execute_sql(sql, db, return_id=True)
+
+	return sql_ok, lastrowid
+
+
 
 def get_total_mensagens_dia(db):
 	tabela = f"{DATABASE_NAME}.chat_mensagem_dia"

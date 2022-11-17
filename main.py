@@ -176,6 +176,13 @@ def dialogflow_webhook():
 		params = context.get("parameters")
 		ajudar_mais = params.get("escolha-ajudar-mais", "")
 		print("ajudar mais: {}".format(ajudar_mais))
+
+		pesquisa = params.get("pesquisa", "")
+		print("pesquisa: {}".format(pesquisa))
+		print("Pesquisa context")
+		print(context)
+		pesquisa = "blahhh"
+		database.insert_pesquisa(session_id, pergunta, pesquisa, db)
 		if ajudar_mais == "sim":
 				response = utils.build_response(followupEventInput='MENU')
 		elif ajudar_mais == "não":
@@ -188,7 +195,7 @@ def dialogflow_webhook():
 			if ajudar_mais == "sim":
 					response = utils.build_menu_perguntas(agent_name, sessionId, "AVC", db)
 			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='MENU')
+					response = utils.build_response(followupEventInput='PESQUISA')
 	elif id_intent == 'FAQ_POS_AVC_RESPOSTA':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-pos-avc")
 			params = avc_context.get("parameters")
@@ -197,7 +204,7 @@ def dialogflow_webhook():
 			if ajudar_mais == "sim":
 					response = utils.build_menu_perguntas(agent_name, sessionId, "POS_AVC", db)
 			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='MENU')
+					response = utils.build_response(followupEventInput='PESQUISA')
 	elif id_intent == 'FAQ_DICAS_RESPOSTA':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-dicas")
 			params = avc_context.get("parameters")
@@ -206,7 +213,7 @@ def dialogflow_webhook():
 			if ajudar_mais == "sim":
 					response = utils.build_menu_perguntas(agent_name, sessionId, "DICAS", db)
 			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='MENU')					
+					response = utils.build_response(followupEventInput='PESQUISA')					
 	elif id_intent == 'FAQ_MEDICACAO_RESPOSTA':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
 			params = avc_context.get("parameters")
@@ -215,7 +222,7 @@ def dialogflow_webhook():
 			if ajudar_mais == "sim":
 					response = utils.build_menu_perguntas(agent_name, sessionId, "MEDICACAO", db)
 			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='MENU')
+					response = utils.build_response(followupEventInput='PESQUISA')
 
 	elif id_intent == 'TRIAGEM_SAMU':
 			triagem_context = utils.get_specific_context(outputContexts, "triagem-followup")
@@ -277,13 +284,19 @@ def dialogflow_webhook():
 			params = emergencia_context.get("parameters", {})
 			ajudar_mais = params.get("ajudar-mais", "")
 			print("ajudar mais: {}".format(ajudar_mais))
+			pesquisa = params.get("pesquisa", "")
+			print("pesquisa: {}".format(pesquisa))
+			print("Pesquisa context")
+			print(emergencia_context)
+			pesquisa = "blahhh"
+			database.insert_pesquisa(session_id, pergunta, pesquisa, db)
 			if ajudar_mais == "sim":
 					response = utils.build_response(followupEventInput='MENU_INICIO')
 			elif ajudar_mais == "não":
 					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 
 	elif id_intent == 'AJUDAR_MAIS':
-			print("emergencia samu")
+			print("ajudar mais")
 			ajudar_mais_context = utils.get_specific_context(outputContexts, "ajudar-mais")
 			params = ajudar_mais_context.get("parameters", {})
 			ajudar_mais = params.get("ajudar-mais", "")
@@ -292,6 +305,17 @@ def dialogflow_webhook():
 					response = utils.build_response(followupEventInput='MENU_INICIO')
 			elif ajudar_mais == "não":
 					response = utils.build_response(followupEventInput='ENCERRAMENTO')
+	elif id_intent == 'PESQUISA':
+			print("pesquisa de satisfação")
+			pesquisa_context = utils.get_specific_context(outputContexts, "pesquisa-satisfacao")
+			params = pesquisa_context.get("parameters", {})
+			pesquisa = params.get("pesquisa", "")
+			print("pesquisa: {}".format(pesquisa))
+			print("Pesquisa context")
+			print(pesquisa_context)
+			pesquisa = "blahhh"
+			database.insert_pesquisa(session_id, pergunta, pesquisa, db)
+			response = utils.build_response(followupEventInput='AJUDAR_MAIS')					
 
 
 
