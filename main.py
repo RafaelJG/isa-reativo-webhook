@@ -170,6 +170,12 @@ def dialogflow_webhook():
 		params = context.get("parameters")
 		ajudar_mais = params.get("escolha-ajudar-mais", "")
 		print("ajudar mais: {}".format(ajudar_mais))
+		pesquisa = params.get("pesquisa", "")
+		print("pesquisa: {}".format(pesquisa))
+		print("Pesquisa context")
+		print(context)
+		pergunta = database.get_last_msg(sessionId, db)
+		database.insert_pesquisa(sessionId, pergunta, pesquisa, db)
 		if ajudar_mais == "sim":
 				response = utils.build_response(followupEventInput='MENU')
 		elif ajudar_mais == "não":
@@ -184,7 +190,7 @@ def dialogflow_webhook():
 		print("pesquisa: {}".format(pesquisa))
 		print("Pesquisa context")
 		print(context)
-		pergunta = "blahhh"
+		pergunta = database.get_last_msg(sessionId, db)
 		database.insert_pesquisa(sessionId, pergunta, pesquisa, db)
 		if ajudar_mais == "sim":
 				response = utils.build_response(followupEventInput='MENU')
@@ -291,7 +297,7 @@ def dialogflow_webhook():
 			print("pesquisa: {}".format(pesquisa))
 			print("Pesquisa context")
 			print(emergencia_context)
-			pergunta = "blahhh"
+			pergunta = database.get_last_msg(sessionId, db)
 			database.insert_pesquisa(sessionId, pergunta, pesquisa, db)
 			if ajudar_mais == "sim":
 					response = utils.build_response(followupEventInput='MENU')
@@ -316,7 +322,7 @@ def dialogflow_webhook():
 			print("pesquisa: {}".format(pesquisa))
 			print("Pesquisa context")
 			print(pesquisa_context)
-			pergunta = "blahhh"
+			pergunta = database.get_last_msg(sessionId, db)
 			database.insert_pesquisa(sessionId, pergunta, pesquisa, db)
 			response = utils.build_response(followupEventInput='AJUDAR_MAIS')					
 

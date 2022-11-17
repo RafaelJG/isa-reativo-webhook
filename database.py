@@ -71,7 +71,13 @@ def get_mensagens_dia_ids(db):
 			ids.append(row['id'])
 	return ids
 
-
+def get_last_msg(session_id, db):
+	tabela = f"{DATABASE_NAME}.chat_historico"
+	result = db.engine.execute(f"SELECT mensagem FROM {tabela} where session_id = {session_id}")
+	msg = ""
+	for row in result:
+			msg = row['mensagem']
+	return msg
 
 
 def get_faq_ids(db, assunto):
