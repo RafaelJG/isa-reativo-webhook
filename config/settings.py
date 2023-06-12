@@ -22,8 +22,9 @@ class DevConfig(BaseConfig):
 	}
 	URL_ADMIN = "https://adm-test.appunimed.com" 
 	DATABASE_NAME = "chatbot_isa"
-	SQLALCHEMY_DATABASE_URI =  "mysql://isa-db-dev:isa-dev-secret-key@sql-proxy:3309/chatbot_isa"
+	SQLALCHEMY_DATABASE_URI =   "mysql://isa-db-dev:isa-dev-secret-key@172.17.0.1:3306/chatbot_isa"
 	LOGSTASH_HOST = "10.128.0.10"
+	
 	AUTHORIZATION = "Y2hhdGJvdC1pYTpjaGF0Ym90LWlhLXNlY3JldC1rZXk="
 	API_TIMEOUT_LIMIT = 5
 
