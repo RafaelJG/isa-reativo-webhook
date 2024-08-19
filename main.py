@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS, cross_origin
-from six.moves import http_client
+#from six.moves import http_client
 from flask_basicauth import BasicAuth
 from g4f.client import Client
 
@@ -346,12 +346,12 @@ def dialogflow_webhook():
 	return make_response(jsonify(response))
 
 # Tratamento de erros de requisicao
-@app.errorhandler(http_client.INTERNAL_SERVER_ERROR)
-def unexpected_error(e):
-	msg = format(e)
-	print(msg)
+#@app.errorhandler(http_client.INTERNAL_SERVER_ERROR)
+#def unexpected_error(e):
+#	msg = format(e)
+#	print(msg)#
 
-	return response
+#	return response
 
 if __name__ == '__main__':
 	#app.run(host='127.0.0.1', port=8030, debug=True)
