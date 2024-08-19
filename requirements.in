@@ -12,3 +12,4 @@ g4f
 numpy
 sqlalchemy
 mysqlclient
+pymysql
