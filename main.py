@@ -154,6 +154,7 @@ def dialogflow_webhook():
 	elif id_intent == 'FAQ_AVC':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-avc")
 			params = avc_context.get("parameters")
+			print("FAQ AVC????")
 			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "AVC", db, client)
 	elif id_intent == 'FAQ_DICAS':
 		print("DICAS")

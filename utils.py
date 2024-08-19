@@ -287,45 +287,45 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db, client)
 	return response
 
 
-def check_similaridade_perguntas(user_query, assunto, db):
-	similaridade_perguntas = float(database.get_parametro("SIMILARIDADE_PERGUNTAS", db))
-	#similaridade_exames_utilizacao = 0.7
-	voting = []
-	user_query = normalizar(user_query)
-	lista = database.get_perguntas(assunto, db)
-	for i, pergunta in enumerate(lista):
-			# [cod_ben, count, nome]
-			print(lista[i])
-			voting.append([lista[i], 0, lista[i]])
-			similaridade = similar(normalizar_palavra(user_query), normalizar_palavra(lista[i]))
-			if similaridade == 1:
-					return lista[i], lista[i], True
+#def check_similaridade_perguntas(user_query, assunto, db):
+#	similaridade_perguntas = float(database.get_parametro("SIMILARIDADE_PERGUNTAS", db))
+#	#similaridade_exames_utilizacao = 0.7
+#	voting = []
+#	user_query = normalizar(user_query)
+#	lista = database.get_perguntas(assunto, db)
+#	for i, pergunta in enumerate(lista):
+#			# [cod_ben, count, nome]
+#			print(lista[i])
+#			voting.append([lista[i], 0, lista[i]])
+#			similaridade = similar(normalizar_palavra(user_query), normalizar_palavra(lista[i]))
+#			if similaridade == 1:
+#					return lista[i], lista[i], True#
 
-	user_query_s = user_query.split()
-	for k, query in enumerate(user_query_s):
-			for i, pergunta in enumerate(lista):
-					print("pergunta: {}".format(pergunta))
-					lista_s = normalizar(pergunta).split()
-					print("pergunta split: {}".format(lista_s))
-					for n, texto_pergunta in enumerate(lista_s):
-							similaridade = similar(normalizar_palavra(query), normalizar_palavra(texto_pergunta))
-							if similaridade >= similaridade_perguntas:
-									voting_count = voting[i][1]
-									voting[i][1] += round(similaridade, 4)
-	voting = sorted(voting, key=itemgetter(1), reverse=True)
-	max_vote = voting[0][1]
-	print("LISTA VOTING: {}".format(voting))
-	if (len(voting) > 1 and float(voting[1][1]) == float(max_vote)) or (len(voting) == 1 and voting[0][1] == 0):
-			return 0, 0, False
-	if voting[0][1] <= 0:  return 0, 0, False
-	return voting[0][0], voting[0][2], True
+#	user_query_s = user_query.split()
+#	for k, query in enumerate(user_query_s):
+#			for i, pergunta in enumerate(lista):
+#					print("pergunta: {}".format(pergunta))
+#					lista_s = normalizar(pergunta).split()
+#					print("pergunta split: {}".format(lista_s))
+#					for n, texto_pergunta in enumerate(lista_s):
+#							similaridade = similar(normalizar_palavra(query), normalizar_palavra(texto_pergunta))
+#							if similaridade >= similaridade_perguntas:
+#									voting_count = voting[i][1]
+#									voting[i][1] += round(similaridade, 4)
+#	voting = sorted(voting, key=itemgetter(1), reverse=True)
+#	max_vote = voting[0][1]
+#	print("LISTA VOTING: {}".format(voting))
+#	if (len(voting) > 1 and float(voting[1][1]) == float(max_vote)) or (len(voting) == 1 and voting[0][1] == 0):
+#			return 0, 0, False
+#	if voting[0][1] <= 0:  return 0, 0, False
+#	return voting[0][0], voting[0][2], True#
 
 
 
-# Encontra similaridade entre duas strings
-def similar(a, b):
-	print("comparando {} com {}".format(a,b))
-	return SequenceMatcher(None, a, b).ratio()
+## Encontra similaridade entre duas strings
+#def similar(a, b):
+#	print("comparando {} com {}".format(a,b))
+#	return SequenceMatcher(None, a, b).ratio()
 
 def normalizar_palavra(txt):
 	txt = remover_acentos(txt)
