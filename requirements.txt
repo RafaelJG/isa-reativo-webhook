@@ -48,22 +48,8 @@ frozenlist==1.4.1
     #   aiosignal
 g4f==0.3.2.4
     # via -r .\requirements.in
-google-api-core[grpc]==1.28.0
-    # via
-    #   google-cloud-core
-    #   google-cloud-logging
-google-auth==1.30.1
-    # via
-    #   google-api-core
-    #   google-cloud-core
-google-cloud-core==1.6.0
-    # via google-cloud-logging
-google-cloud-logging==2.4.0
-    # via -r .\requirements.in
-googleapis-common-protos==1.53.0
-    # via google-api-core
-grpcio==1.38.0
-    # via google-api-core
+
+
 idna==2.10
     # via
     #   requests
@@ -82,21 +68,12 @@ mysqlclient==2.0.3
     # via -r .\requirements.in
 numpy==2.1.0
     # via -r .\requirements.in
-packaging==20.9
-    # via google-api-core
-proto-plus==1.18.1
-    # via google-cloud-logging
-protobuf==3.17.1
-    # via
-    #   google-api-core
-    #   googleapis-common-protos
-    #   proto-plus
+
 pyasn1==0.4.8
     # via
     #   pyasn1-modules
     #   rsa
-pyasn1-modules==0.2.8
-    # via google-auth
+
 pycparser==2.22
     # via cffi
 pycryptodome==3.20.0
