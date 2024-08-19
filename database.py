@@ -348,13 +348,9 @@ def db_execute_sql(sql, db, return_id=False):
 	sql_ok = False
 	try:
 			result = db.execute(sql)
-			db.session.commit()
 			sql_ok = True
 	except:
 			sql_ok = False
-			db.session.rollback()
-
-	db.session.close()
 
 	if sql_ok and return_id:
 			last_id = result.lastrowid
