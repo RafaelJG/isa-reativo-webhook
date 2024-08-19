@@ -273,12 +273,12 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db, client)
 					#pergunta_faq = check_similaridade_perguntas(user_choice, assunto, db)
 					lista_txt = database.get_lista_perguntas(assunto, db)
 					id = get_resposta_gpt(user_choice, lista_txt, client)
-					if pergunta_faq[2]:
+					if id:
 							resposta_faq = database.get_resposta(id, assunto, db)
 							pergunta_faq = database.get_pergunta(id, assunto, db)
 							params = {}
 							params['resposta_faq'] = resposta_faq
-							params['pergunta_faq'] = pergunta_faq[0]
+							params['pergunta_faq'] = pergunta_faq
 							new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 100, context_params=params)
 							response = build_response(followupEventInput='FAQ_{}_RESPOSTA'.format(assunto), outputContexts=new_context)
 					else:
