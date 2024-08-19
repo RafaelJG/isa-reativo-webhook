@@ -106,3 +106,7 @@ venv.bak/
 scripts_database/
 
 \.vscode/launch\.json
+
+webhook_isa/Scripts/python.exe
+
+teste.ipynb

@@ -11,9 +11,12 @@ from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS, cross_origin
 from six.moves import http_client
 from flask_basicauth import BasicAuth
+from g4f.client import Client
 
 app = Flask(__name__)
 CORS(app)
+
+client = Client()
 
 #Recuperaçãp de username e password utilizados na autenticação basic dos endpoints
 app.config['BASIC_AUTH_USERNAME'] = config.BASIC_AUTH_NAME
@@ -151,20 +154,20 @@ def dialogflow_webhook():
 	elif id_intent == 'FAQ_AVC':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-avc")
 			params = avc_context.get("parameters")
-			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "AVC", db)
+			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "AVC", db, client)
 	elif id_intent == 'FAQ_DICAS':
 		print("DICAS")
 		avc_context = utils.get_specific_context(outputContexts, "perguntas-context-dicas")
 		params = avc_context.get("parameters")
-		response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "DICAS", db)			
+		response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "DICAS", db, client)			
 	elif id_intent == 'FAQ_POS_AVC':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-pos-avc")
 			params = avc_context.get("parameters")
-			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "POS_AVC", db)
+			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "POS_AVC", db, client)
 	elif id_intent == 'FAQ_MEDICACAO':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
 			params = avc_context.get("parameters")
-			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "MEDICACAO", db)
+			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "MEDICACAO", db, client)
 	elif id_intent == 'SOBRE_ISA':
 		context = utils.get_specific_context(outputContexts, "sobre-isa-context")
 		params = context.get("parameters")
@@ -204,7 +207,7 @@ def dialogflow_webhook():
 			if ajudar_mais == "sim":
 					response = utils.build_menu_perguntas(agent_name, sessionId, "AVC", db)
 			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='PESQUISA')
+					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 	elif id_intent == 'FAQ_POS_AVC_RESPOSTA':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-pos-avc")
 			params = avc_context.get("parameters")
@@ -213,7 +216,7 @@ def dialogflow_webhook():
 			if ajudar_mais == "sim":
 					response = utils.build_menu_perguntas(agent_name, sessionId, "POS_AVC", db)
 			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='PESQUISA')
+					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 	elif id_intent == 'FAQ_DICAS_RESPOSTA':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-dicas")
 			params = avc_context.get("parameters")
@@ -222,7 +225,7 @@ def dialogflow_webhook():
 			if ajudar_mais == "sim":
 					response = utils.build_menu_perguntas(agent_name, sessionId, "DICAS", db)
 			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='PESQUISA')					
+					response = utils.build_response(followupEventInput='ENCERRAMENTO')					
 	elif id_intent == 'FAQ_MEDICACAO_RESPOSTA':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
 			params = avc_context.get("parameters")
@@ -231,8 +234,7 @@ def dialogflow_webhook():
 			if ajudar_mais == "sim":
 					response = utils.build_menu_perguntas(agent_name, sessionId, "MEDICACAO", db)
 			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='PESQUISA')
-
+					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 	elif id_intent == 'TRIAGEM_SAMU':
 			triagem_context = utils.get_specific_context(outputContexts, "triagem-followup")
 			params = triagem_context.get("parameters", {})
@@ -303,7 +305,6 @@ def dialogflow_webhook():
 					response = utils.build_response(followupEventInput='MENU')
 			elif ajudar_mais == "não":
 					response = utils.build_response(followupEventInput='ENCERRAMENTO')
-
 	elif id_intent == 'AJUDAR_MAIS':
 			print("ajudar mais")
 			ajudar_mais_context = utils.get_specific_context(outputContexts, "ajudar-mais")
@@ -325,13 +326,6 @@ def dialogflow_webhook():
 			pergunta = database.get_last_msg(sessionId, db)
 			database.insert_pesquisa(sessionId, pergunta, pesquisa, db)
 			response = utils.build_response(followupEventInput='AJUDAR_MAIS')					
-
-
-
-
-
-
-
 
 
 	print("RESPOSTA: {}".format(response))

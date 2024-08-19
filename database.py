@@ -40,17 +40,6 @@ def insert_joinvasc(session_id, joinvasc, db):
 	return sql_ok, lastrowid	
 
 
-
-def get_total_mensagens_dia(db):
-	tabela = f"{DATABASE_NAME}.chat_mensagem_dia"
-	result = f"SELECT count(*) FROM {tabela}"
-
-	for row in result:
-			resposta = row[0]
-
-			print(resposta)
-	return resposta
-
 # Salva intent id pela session
 def get_mensagem_dia(id_mensagem, db):
 	tabela = f"{DATABASE_NAME}.chat_mensagem_dia"
@@ -313,130 +302,16 @@ def get_api_url(id_api, db):
 
 	return api_url
 
-# Consulta nome da cidade dado o codigo IBGE
-def get_nome_cidade(cod, db):
-	tabela = f"{DATABASE_NAME}.chat_cidades"
-	nome_cidade = ""
-	#sql_txt = "SELECT cidade FROM ia_chat_carol_test.chat_cidades WHERE id LIKE \'" + str(cod) + "\'"
-	#sql = text(sql_txt)
-	result = db.engine.execute(f"""SELECT cidade FROM {tabela} WHERE id = %s""", (str(cod),))
-	rows = result.fetchone()
-
-	if rows:
-			nome_cidade = rows['cidade']
-
-	return nome_cidade
-
-# Consulta codigo IBGE de uma cidade pelo nome
-def get_cidade(cidade, db, estado = ""):
-	cod_cidade = ""
-	tabela = f"{DATABASE_NAME}.chat_cidades"
-	#sql_txt = "SELECT * FROM ia_chat_carol_test.chat_cidades WHERE cidade LIKE \'" + str(querry) + "\'"
-	#sql = text(sql_txt)
-	if estado:
-			result = db.engine.execute(f"""SELECT * FROM {tabela} WHERE cidade = %s and UF = %s""", (cidade, estado))
-	else:
-			result = db.engine.execute(f"""SELECT * FROM {tabela} WHERE cidade = %s""", (cidade,))
-	rows = result.fetchone()
-
-	if rows:
-			cod_cidade = rows['id']
-
-	return cod_cidade
-
-# Verifica se a cidade pertence ao estado informado
-def check_cidade_estado(cidade, estado, db):
-	tabela = f"{DATABASE_NAME}.chat_cidades"
-	cod_cidade = ""
-	result = db.engine.execute(f"""SELECT * FROM {tabela} WHERE cidade = %s and UF = %s""", (cidade, estado,))
-	rows = result.fetchone()
-
-	if rows:
-			cod_cidade = rows['id']
-
-	return cod_cidade
-
-
-
-# Consulta protocolo do usuario
-def get_protocolo(user_id, db):
-
-	tabela = f"{DATABASE_NAME}.chat_beneficiarios_web"
-	#sql_txt = "SELECT protocolo FROM ia_chat_carol_test.chat_beneficiarios_web WHERE id_usuario LIKE '{}'".format(str(user_id))
-	#sql = text(sql_txt)
-	result = db.engine.execute(f"""SELECT protocolo FROM {tabela} WHERE id_usuario = %s""", (user_id,))
-	rows = result.fetchone()
-
-	protocolo = ""
-	if rows:
-			protocolo = rows['protocolo']
-
-	return protocolo
-
-
-
-# Consulta protocolo do usuario
-def get_preparacao_exames(busca_exame, db):
-
-	tabela = f"{DATABASE_NAME}.chat_exames"
-	#sql_txt = "SELECT protocolo FROM ia_chat_carol_test.chat_beneficiarios_web WHERE id_usuario LIKE '{}'".format(str(user_id))
-	#sql = text(sql_txt)
-	result = db.engine.execute("""SELECT mnemonico, nome_exame, preparacao_exame FROM {} WHERE nome_exame='{}'""".format(tabela, busca_exame))
-	rows = result.fetchone()
-
-	result = {}
-	if rows:
-			result['preparacao_exame'] = rows['preparacao_exame']
-			result['mnemonico'] = rows['mnemonico']
-			result['nome_exame'] = rows['nome_exame']
-
-	return result
-
-# Consulta protocolo do usuario
-def get_exames(busca_exame, db):
-
-	tabela = f"{DATABASE_NAME}.chat_exames"
-	#sql_txt = "SELECT protocolo FROM ia_chat_carol_test.chat_beneficiarios_web WHERE id_usuario LIKE '{}'".format(str(user_id))
-	#sql = text(sql_txt)
-	sql_txt = f"SELECT mnemonico, nome_exame FROM {tabela} WHERE sinonimos_exame LIKE '%%{busca_exame}%%'"
-	print("Comando SQL:{}".format(sql_txt))
-	#sql = text(sql_txt)
-	result = db.engine.execute(sql_txt)
-	exame = [row['nome_exame'] for row in result]
-
-	return exame
-
-
-def get_detalhes_unidades(busca_bairro, db):
-
-	tabela = f"{DATABASE_NAME}.chat_unidades"
-
-	sql_txt = f"SELECT dados_unidade, link_maps FROM {tabela} WHERE bairros_unidade LIKE '%%{busca_bairro}%%'"
-	print("Comando SQL:{}".format(sql_txt))
-	#sql = text(sql_txt)
-	result = db.engine.execute(sql_txt)
-	unidades = [row['dados_unidade'] + "\n    " + row['link_maps'] for row in result]
-
-	return unidades
-
-def get_nome_unidades(busca_bairro, db):
-
-	tabela = f"{DATABASE_NAME}.chat_unidades"
-
-	sql_txt = f"SELECT nome_unidade FROM {tabela} WHERE bairros_unidade LIKE '%%{busca_bairro}%%'"
-	print("Comando SQL:{}".format(sql_txt))
-	#sql = text(sql_txt)
-	result = db.engine.execute(sql_txt)
-	unidades = [row['nome_unidade'] for row in result]
-
-
-	return unidades
 
 
 
 
-
-
+def get_lista_perguntas(assunto, db):
+	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+	result = db.engine.execute(f"SELECT id, pergunta FROM {tabela}")
+	# Converte a tupla para a lista no formato desejado
+	lista_formatada = [f"{item[0]} - {item[1]}" for item in result]
+	return str(lista_formatada)
 
 
 

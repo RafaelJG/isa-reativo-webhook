@@ -228,7 +228,7 @@ def build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = Fals
 	return response
 
 
-def get_pergunta_from_lista(params, agent_name, session_id, assunto, db):
+def get_pergunta_from_lista(params, agent_name, session_id, assunto, db, client):
 
 	user_choice = params['user_choice_faq']
 	nros = params['nros_menu'].split(',')
@@ -271,8 +271,10 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db):
 					# busca por texto
 					#id = database.get_faq_id_from_ent(user_choice, assunto, db)
 					pergunta_faq = check_similaridade_perguntas(user_choice, assunto, db)
+					lista_txt = database.get_lista_perguntas(assunto, db)
+					id = get_resposta_gpt(user_choice, lista_txt, client)
 					if pergunta_faq[2]:
-							resposta_faq = database.get_resposta_from_pergunta(pergunta_faq[0], assunto, db)
+							resposta_faq = database.get_resposta(id, assunto, db)
 							params = {}
 							params['resposta_faq'] = resposta_faq
 							params['pergunta_faq'] = pergunta_faq[0]
@@ -356,3 +358,42 @@ def get_mensagem_dia(agent_name, session_id, db):
 	new_context = utils.build_new_context(agent_name, session_id, "mensagem-dia-context", 5, context_params=params)
 	response = utils.build_response(followupEventInput='MENSAGEM_DO_DIA', outputContexts=new_context)
 	return response
+
+
+
+def extrair_algarismos(string):
+    # Usa regex para encontrar os primeiros três, dois ou um algarismo consecutivo
+    match = re.match(r'(\d{3})', string)
+    if match:
+        return match.group(1)
+    else:
+        match = re.match(r'(\d{2})', string)
+        if match:
+            return match.group(1)
+        else:
+            match = re.match(r'(\d)', string)
+            if match:
+                return match.group(1)
+            else:
+                return None
+
+
+def get_resposta_gpt(entrada, lista_txt, client):
+
+
+    message = "considerando as seguintes opções (entre colchetes):"+lista_txt+"qual se assemelha mais com a entrada: "+entrada+"? retorne como resposta APENAS o número da pergunta que melhor corresponde"
+
+    # Imprime o número atual
+    print("Consultando GPT, entrada: {}".format(entrada))
+    response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[{"role": "user", "content": message}]
+    )
+    resposta = response.choices[0].message.content
+    print("Consultando GPT, resposta: {}".format(resposta))
+    resposta = extrair_algarismos(resposta)
+
+	
+    return resposta
+
+
