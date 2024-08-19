@@ -32,7 +32,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 #b = SQLAlchemy(app)
 
 # Crie o engine
-db = create_engine(config.SQLALCHEMY_DATABASE_URI)
+db = create_engine("mysql+pymysql://isa-db-dev:isa-dev-secret-key@172.17.0.1:3306/chatbot_isa")
 
 #Configuração da autenticação dos endpoints
 basic_auth = BasicAuth(app)
