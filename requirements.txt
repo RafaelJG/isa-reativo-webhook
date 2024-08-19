@@ -60,6 +60,8 @@ multidict==6.0.5
     # via
     #   aiohttp
     #   yarl
+mysqlclient==2.2.4
+    # via -r .\requirements.in
 numpy==2.1.0
     # via -r .\requirements.in
 pycparser==2.22

@@ -11,3 +11,4 @@ curl_cffi
 g4f
 numpy
 sqlalchemy
+mysqlclient
