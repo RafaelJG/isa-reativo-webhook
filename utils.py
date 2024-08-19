@@ -270,11 +270,12 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db, client)
 			except ValueError as e:
 					# busca por texto
 					#id = database.get_faq_id_from_ent(user_choice, assunto, db)
-					pergunta_faq = check_similaridade_perguntas(user_choice, assunto, db)
+					#pergunta_faq = check_similaridade_perguntas(user_choice, assunto, db)
 					lista_txt = database.get_lista_perguntas(assunto, db)
 					id = get_resposta_gpt(user_choice, lista_txt, client)
 					if pergunta_faq[2]:
 							resposta_faq = database.get_resposta(id, assunto, db)
+							pergunta_faq = database.get_pergunta(id, assunto, db)
 							params = {}
 							params['resposta_faq'] = resposta_faq
 							params['pergunta_faq'] = pergunta_faq[0]

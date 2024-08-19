@@ -209,6 +209,14 @@ def get_resposta(id, assunto, db):
 			resposta = row['resposta']
 	return resposta
 
+def get_pergunta(id, assunto, db):
+	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+	result = db.engine.execute(f"SELECT pergunta FROM {tabela} where id = {id}")
+	pergunta = ""
+	for row in result:
+			pergunta = row['pergunta']
+	return pergunta
+
 def get_link_FAQ(id, assunto, db):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
 	result = db.engine.execute(f"SELECT link_short FROM {tabela} where id = {id}")
