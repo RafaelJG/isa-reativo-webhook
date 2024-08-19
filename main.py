@@ -13,6 +13,10 @@ from six.moves import http_client
 from flask_basicauth import BasicAuth
 from g4f.client import Client
 
+from sqlalchemy import create_engine, text
+
+
+
 app = Flask(__name__)
 CORS(app)
 
@@ -25,7 +29,10 @@ app.config['BASIC_AUTH_PASSWORD'] = config.BASIC_AUTH_PASSWORD
 
 #Configurações do banco
 app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
-db = SQLAlchemy(app)
+#b = SQLAlchemy(app)
+
+# Crie o engine
+db = create_engine(config.SQLALCHEMY_DATABASE_URI)
 
 #Configuração da autenticação dos endpoints
 basic_auth = BasicAuth(app)

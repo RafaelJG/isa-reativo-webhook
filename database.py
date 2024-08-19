@@ -43,7 +43,7 @@ def insert_joinvasc(session_id, joinvasc, db):
 # Salva intent id pela session
 def get_mensagem_dia(id_mensagem, db):
 	tabela = f"{DATABASE_NAME}.chat_mensagem_dia"
-	result = db.engine.execute(f"SELECT mensagem FROM {tabela} where id = {id_mensagem}")
+	result = db.execute(f"SELECT mensagem FROM {tabela} where id = {id_mensagem}")
 	resposta = ""
 	for row in result:
 			resposta = row['mensagem']
@@ -54,7 +54,7 @@ def get_mensagens_dia_ids(db):
 
 
 	sql_txt = f"SELECT id FROM {tabela}"
-	result = db.engine.execute(sql_txt)
+	result = db.execute(sql_txt)
 	ids =[]
 	for row in result:
 			ids.append(row['id'])
@@ -62,7 +62,7 @@ def get_mensagens_dia_ids(db):
 
 def get_last_msg(session_id, db):
 	tabela = f"{DATABASE_NAME}.chat_historico"
-	result = db.engine.execute(f"SELECT mensagem FROM {tabela} where session_id = '{session_id}' AND origem = 'BOT'")
+	result = db.execute(f"SELECT mensagem FROM {tabela} where session_id = '{session_id}' AND origem = 'BOT'")
 	msg = ""
 	for row in result:
 			msg = row['mensagem']
@@ -74,7 +74,7 @@ def get_faq_ids(db, assunto):
 
 
 	sql_txt = f"SELECT id FROM {tabela}"
-	result = db.engine.execute(sql_txt)
+	result = db.execute(sql_txt)
 	ids =[]
 	for row in result:
 			ids.append(row['id'])
@@ -88,7 +88,7 @@ def update_intent_count(id_intent, db):
 
 	print("ID_INTENT: {}".format(id_intent))
 	# checar se intent já existe na tabela
-	result = db.engine.execute(f"""SELECT * FROM {tabela} where id_intent = %s""", (id_intent, ))
+	result = db.execute(f"""SELECT * FROM {tabela} where id_intent = %s""", (id_intent, ))
 	rows = result.fetchone()
 	intent_count = 1
 	if rows:
@@ -109,7 +109,7 @@ def update_intent_count(id_intent, db):
 #       tabela = f"{DATABASE_NAME}.chat_session_origem"
 #       #sql_txt = f"SELECT origem FROM {tabela} WHERE id_usuario = '{}'".format(tabela, user_id)
 #       #sql = text(sql_txt)
-#       result = db.engine.execute(f"""SELECT origem FROM {tabela} WHERE id_usuario = %s""", (user_id, ))
+#       result = db.execute(f"""SELECT origem FROM {tabela} WHERE id_usuario = %s""", (user_id, ))
 #       rows = result.fetchone()
 
 #       origem = ""
@@ -127,7 +127,7 @@ def get_fallback_count(session_id, db):
 			#sql_txt = f"SELECT fallback_count from {tabela} WHERE session_id = '{}'".format(session_id)
 
 			#sql = text(sql_txt)
-			result = db.engine.execute(f"""SELECT fallback_count from {tabela} WHERE session_id = %s""", (session_id, ))
+			result = db.execute(f"""SELECT fallback_count from {tabela} WHERE session_id = %s""", (session_id, ))
 			rows = result.fetchone()
 
 			if rows:
@@ -166,7 +166,7 @@ def get_parametro(id_param, db):
 	tabela = f"{DATABASE_NAME}.chat_parametrizacoes"
 	#sql_txt = "SELECT valor FROM ia_chat_carol_test.chat_parametrizacoes where id_param = '{}'".format(id_param)
 	#sql = text(sql_txt)
-	result = db.engine.execute(f"""SELECT valor FROM {tabela} where id_param = %s""", (id_param,))
+	result = db.execute(f"""SELECT valor FROM {tabela} where id_param = %s""", (id_param,))
 	rows = result.fetchone()
 
 	valor = ""
@@ -180,7 +180,7 @@ def get_bot_messages(id_message, db):
 	tabela = f"{DATABASE_NAME}.chat_mensagens"
 	#sql_txt = "SELECT mensagem FROM ia_chat_carol_test.chat_mensagens WHERE id_msg = '{}'".format(id_message)
 	#sql = text(sql_txt)
-	results = db.engine.execute(f"""SELECT mensagem FROM {tabela} WHERE id_msg = %s""", (id_message,))
+	results = db.execute(f"""SELECT mensagem FROM {tabela} WHERE id_msg = %s""", (id_message,))
 
 	messages = []
 	for row in results:
@@ -193,9 +193,9 @@ def get_bot_messages(id_message, db):
 def get_perguntas(assunto, db, ids=0):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
 	if ids:
-			result = db.engine.execute(f"SELECT pergunta FROM {tabela} where id in ({ids})")
+			result = db.execute(f"SELECT pergunta FROM {tabela} where id in ({ids})")
 	else:
-			result = db.engine.execute(f"SELECT pergunta FROM {tabela}")
+			result = db.execute(f"SELECT pergunta FROM {tabela}")
 	perguntas = []
 	for row in result:
 			perguntas.append(row['pergunta'])
@@ -203,7 +203,7 @@ def get_perguntas(assunto, db, ids=0):
 
 def get_resposta(id, assunto, db):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
-	result = db.engine.execute(f"SELECT resposta FROM {tabela} where id = {id}")
+	result = db.execute(f"SELECT resposta FROM {tabela} where id = {id}")
 	resposta = ""
 	for row in result:
 			resposta = row['resposta']
@@ -211,7 +211,7 @@ def get_resposta(id, assunto, db):
 
 def get_pergunta(id, assunto, db):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
-	result = db.engine.execute(f"SELECT pergunta FROM {tabela} where id = {id}")
+	result = db.execute(f"SELECT pergunta FROM {tabela} where id = {id}")
 	pergunta = ""
 	for row in result:
 			pergunta = row['pergunta']
@@ -219,7 +219,7 @@ def get_pergunta(id, assunto, db):
 
 def get_link_FAQ(id, assunto, db):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
-	result = db.engine.execute(f"SELECT link_short FROM {tabela} where id = {id}")
+	result = db.execute(f"SELECT link_short FROM {tabela} where id = {id}")
 	resposta = ""
 	for row in result:
 			resposta = row['link_short']
@@ -227,7 +227,7 @@ def get_link_FAQ(id, assunto, db):
 
 def get_resposta_from_pergunta(pergunta, assunto, db):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
-	result = db.engine.execute(f"SELECT resposta FROM {tabela} where pergunta = '{pergunta}'")
+	result = db.execute(f"SELECT resposta FROM {tabela} where pergunta = '{pergunta}'")
 	resposta = ""
 	for row in result:
 			resposta = row['resposta']
@@ -235,7 +235,7 @@ def get_resposta_from_pergunta(pergunta, assunto, db):
 
 def get_faq_id_from_ent(user_choice, assunto, db):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
-	result = db.engine.execute(f"SELECT id FROM {tabela} where faq_ent = '{user_choice}'")
+	result = db.execute(f"SELECT id FROM {tabela} where faq_ent = '{user_choice}'")
 	id = ""
 	for row in result:
 			id = row['id']
@@ -244,7 +244,7 @@ def get_faq_id_from_ent(user_choice, assunto, db):
 # Recupera a intent atual da sessão
 def get_current_intent(session_id, db):
 	tabela = f"{DATABASE_NAME}.chat_session_current_intent"
-	results = db.engine.execute(f"""SELECT * FROM {tabela} WHERE session_id = '{session_id}' """)
+	results = db.execute(f"""SELECT * FROM {tabela} WHERE session_id = '{session_id}' """)
 	row = results.fetchone()
 
 	current_intent = ''
@@ -273,7 +273,7 @@ def get_intent_description(dialogflow_intent_name, db):
 	tabela = f"{DATABASE_NAME}.chat_intents"
 	#sql_txt = "SELECT intent_description FROM ia_chat_carol_test.chat_intents where dialogflow = '{}'".format(dialogflow_intent_name)
 	#sql = text(sql_txt)
-	result = db.engine.execute(f"""SELECT intent_description FROM {tabela} where dialogflow = %s""", (dialogflow_intent_name,))
+	result = db.execute(f"""SELECT intent_description FROM {tabela} where dialogflow = %s""", (dialogflow_intent_name,))
 	rows = result.fetchone()
 
 	intent_description = ""
@@ -287,7 +287,7 @@ def get_intent_description(dialogflow_intent_name, db):
 # Recupera nome da intencao no Dialogflow
 def get_intent_id(dialogflow_intent_name, db):
 	tabela = f"{DATABASE_NAME}.chat_intents"
-	result = db.engine.execute(f"""SELECT id_intent FROM {tabela} where dialogflow = %s""", (dialogflow_intent_name,))
+	result = db.execute(f"""SELECT id_intent FROM {tabela} where dialogflow = %s""", (dialogflow_intent_name,))
 	rows = result.fetchone()
 
 	id_intent = ""
@@ -301,7 +301,7 @@ def get_api_url(id_api, db):
 	tabela = f"{DATABASE_NAME}.chat_apis"
 	#sql_txt = "SELECT api_url FROM ia_chat_carol_test.chat_apis where id_api = '{}' and ambiente = '{}'".format(id_api, ambiente)
 	#sql = text(sql_txt)
-	result = db.engine.execute(f"""SELECT api_url FROM {tabela} where id_api = %s""", (id_api,))
+	result = db.execute(f"""SELECT api_url FROM {tabela} where id_api = %s""", (id_api,))
 	rows = result.fetchone()
 
 	api_url = ""
@@ -316,7 +316,7 @@ def get_api_url(id_api, db):
 
 def get_lista_perguntas(assunto, db):
 	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
-	result = db.engine.execute(f"SELECT id, pergunta FROM {tabela}")
+	result = db.execute(f"SELECT id, pergunta FROM {tabela}")
 	# Converte a tupla para a lista no formato desejado
 	lista_formatada = [f"{item[0]} - {item[1]}" for item in result]
 	return str(lista_formatada)
@@ -347,7 +347,7 @@ def get_lista_perguntas(assunto, db):
 def db_execute_sql(sql, db, return_id=False):
 	sql_ok = False
 	try:
-			result = db.engine.execute(sql)
+			result = db.execute(sql)
 			db.session.commit()
 			sql_ok = True
 	except:
