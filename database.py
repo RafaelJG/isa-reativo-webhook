@@ -320,8 +320,8 @@ def get_lista_perguntas(db):
 
 
 def get_init_text(db):
-	msg = get_bot_messages("INIT_GEMINI", db)
-	lista = get_lista_perguntas(db)
+	msg = str(get_bot_messages("INIT_GEMINI", db))
+	lista = str(get_lista_perguntas(db))
 
 	msg_init = msg + str(lista)
 
