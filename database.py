@@ -69,8 +69,8 @@ def get_last_msg(session_id, db):
 	return msg
 
 
-def get_faq_ids(db, assunto):
-	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+def get_faq_ids(db):
+	tabela = f"{DATABASE_NAME}.chat_faq_avc"
 
 
 	sql_txt = f"SELECT id FROM {tabela}"
@@ -190,8 +190,8 @@ def get_bot_messages(id_message, db):
 
 
 # Retorna as perguntas do faq do coronavírus de acordo com os ids informados
-def get_perguntas(assunto, db, ids=0):
-	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+def get_perguntas(db, ids=0):
+	tabela = f"{DATABASE_NAME}.chat_faq_avc"
 	if ids:
 			result = db.execute(f"SELECT pergunta FROM {tabela} where id in ({ids})")
 	else:
@@ -201,40 +201,40 @@ def get_perguntas(assunto, db, ids=0):
 			perguntas.append(row['pergunta'])
 	return perguntas
 
-def get_resposta(id, assunto, db):
-	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+def get_resposta(id, db):
+	tabela = f"{DATABASE_NAME}.chat_faq_todos"
 	result = db.execute(f"SELECT resposta FROM {tabela} where id = {id}")
 	resposta = ""
 	for row in result:
 			resposta = row['resposta']
 	return resposta
 
-def get_pergunta(id, assunto, db):
-	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+def get_pergunta(id, db):
+	tabela = f"{DATABASE_NAME}.chat_faq_todos"
 	result = db.execute(f"SELECT pergunta FROM {tabela} where id = {id}")
 	pergunta = ""
 	for row in result:
 			pergunta = row['pergunta']
 	return pergunta
 
-def get_link_FAQ(id, assunto, db):
-	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+def get_link_FAQ(id, db):
+	tabela = f"{DATABASE_NAME}.chat_faq_avc"
 	result = db.execute(f"SELECT link_short FROM {tabela} where id = {id}")
 	resposta = ""
 	for row in result:
 			resposta = row['link_short']
 	return resposta	
 
-def get_resposta_from_pergunta(pergunta, assunto, db):
-	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+def get_resposta_from_pergunta(pergunta, db):
+	tabela = f"{DATABASE_NAME}.chat_faq_avc"
 	result = db.execute(f"SELECT resposta FROM {tabela} where pergunta = '{pergunta}'")
 	resposta = ""
 	for row in result:
 			resposta = row['resposta']
 	return resposta
 
-def get_faq_id_from_ent(user_choice, assunto, db):
-	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+def get_faq_id_from_ent(user_choice, db):
+	tabela = f"{DATABASE_NAME}.chat_faq_avc"
 	result = db.execute(f"SELECT id FROM {tabela} where faq_ent = '{user_choice}'")
 	id = ""
 	for row in result:
@@ -311,16 +311,34 @@ def get_api_url(id_api, db):
 	return api_url
 
 
-
-
-
-def get_lista_perguntas(assunto, db):
-	tabela = f"{DATABASE_NAME}.chat_faq_{assunto.lower()}"
+def get_lista_perguntas(db):
+	tabela = f"{DATABASE_NAME}.chat_faq_avc"
 	result = db.execute(f"SELECT id, pergunta FROM {tabela}")
 	# Converte a tupla para a lista no formato desejado
 	lista_formatada = [f"{item[0]} - {item[1]}" for item in result]
 	return str(lista_formatada)
 
+
+def get_init_text(db):
+	msg = get_bot_messages("INIT_GEMINI", db)
+	lista = get_lista_perguntas(db)
+
+	msg_init = msg + lista
+
+	return msg_init
+
+
+
+
+# Recupera a lista de mensagens dado um ID especifico
+def get_gemini_keys(db):
+	tabela = f"{DATABASE_NAME}.auth_gemini"
+	results = db.execute(f"""SELECT key FROM {tabela}""")
+	keys = []
+	for row in results:
+			keys.append(row['key'])
+
+	return keys
 
 
 
