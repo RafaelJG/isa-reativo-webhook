@@ -13,3 +13,4 @@ numpy
 sqlalchemy
 mysqlclient
 pymysql
+google.generativeai
