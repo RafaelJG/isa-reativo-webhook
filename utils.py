@@ -270,8 +270,7 @@ def get_pergunta_from_lista(params, agent_name, session_id, db, client):
 					# busca por texto
 					#id = database.get_faq_id_from_ent(user_choice, assunto, db)
 					#pergunta_faq = check_similaridade_perguntas(user_choice, assunto, db)
-					lista_txt = database.get_lista_perguntas(db)
-					id = get_pergunta_gemini(user_choice, lista_txt, client)
+					id = get_pergunta_gemini(user_choice, db)
 					if id:
 							resposta_faq = database.get_resposta(id, db)
 							pergunta_faq = database.get_pergunta(id, db)
@@ -287,12 +286,12 @@ def get_pergunta_from_lista(params, agent_name, session_id, db, client):
 
 
 
-def resposta_faq(pergunta, db, agent_name, session_id, sessions):
+def resposta_faq(pergunta, db, agent_name, session_id):
 	# busca por texto
 	#id = database.get_faq_id_from_ent(user_choice, assunto, db)
 	#pergunta_faq = check_similaridade_perguntas(user_choice, assunto, db)
-	session = random.choice(sessions)
-	id = get_pergunta_gemini(pergunta, session)
+	
+	id = get_pergunta_gemini(pergunta, db)
 	if id:
 			resposta_faq = database.get_resposta(id, db)
 			pergunta_faq = database.get_pergunta(id, db)
