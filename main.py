@@ -112,7 +112,7 @@ def dialogflow_webhook():
 					print("Escolha não vazia!!!!!!!")
 					#chamar GPT
 					response = utils.resposta_faq (escolha, db, agent_name, sessionId)
-					response = utils.build_response(followupEventInput='MENU_RETRY')
+					#response = utils.build_response(followupEventInput='MENU_RETRY')
 			else:
 					# não foi aceito pela entidade, entrou por evento ou entrou na funcionalidade por gatilho
 					print("Escolha vazia!!!!!!!")
