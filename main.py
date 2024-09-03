@@ -100,20 +100,11 @@ def dialogflow_webhook():
 					response = utils.build_response(followupEventInput='TRIAGEM_INICIO')
 			elif escolha == '2':
 					# montar resposta para ir para a intencao de exames
-					response = utils.build_menu_perguntas(agent_name, sessionId, "AVC", db)
+					response = utils.build_menu_perguntas(agent_name, sessionId, db)
 			elif escolha == '3':
 					# montar resposta para ir para a intencao de exames
-					response = utils.build_menu_perguntas(agent_name, sessionId, "POS_AVC", db)
-			elif escolha == '4':
-					# montar resposta para ir para a intencao de exames
-					response = utils.build_menu_perguntas(agent_name, sessionId, "MEDICACAO", db)
-			elif escolha == '5':
-					# montar resposta para ir para a intencao de exames
-					response = utils.build_menu_perguntas(agent_name, sessionId, "DICAS", db)
-			elif escolha == '6':
-					# montar resposta para ir para a intencao de exames
 					response = utils.get_mensagem_dia(agent_name, sessionId, db)					
-			elif escolha == '7':
+			elif escolha == '4':
 					# montar resposta para ir para a intencao de exames
 					response = utils.build_response(followupEventInput='SOBRE_ISA')
 			elif escolha != '':
@@ -132,50 +123,14 @@ def dialogflow_webhook():
 					detection_confidence = float(queryResult.get('intentDetectionConfidence', -1))
 					print("DETECTION CONFIDENCE: {}".format(detection_confidence))
 					if(queryText != 'MENU_RETRY' and detection_confidence < 0.3): #entrou por evento ou entrou por gatilho
-							print("Entrou no if")
-							_, count = database.update_fallback_count(sessionId,db, reset=False)  # se não foi nenhum desses casos, é realmente um fallback
-							print("CONTAGEM FALLBACK: {}".format(count))
-							print("LIMITE FALLBACK: {}".format(limite_fallback))
-							if count >= int(limite_fallback):
-									response = utils.build_response(followupEventInput='TRANSBORDO')
-							else:
-									response = utils.build_response(followupEventInput='MENU_RETRY')
+						response = utils.resposta_faq(queryText, db, agent_name, sessionId)
 					else:
 							print("qualquer coisa")
-	elif id_intent == 'TRIAGEM_INICIO':
-			triagem_context = utils.get_specific_context(outputContexts, "inicio-triagem")
-			params = triagem_context.get("parameters", {})
-			escolha_triagem = params.get("escolha-triagem", "")
-			if escolha_triagem == "continuar":
-					response = utils.build_response(followupEventInput='TRIAGEM_SAMU')
-			elif escolha_triagem == "emergencia":
-					response = utils.build_response(followupEventInput='CHAMOU_EMERGENCIA')
-	elif id_intent == 'CHAMOU_EMERGENCIA':
-			emergencia_context = utils.get_specific_context(outputContexts, "chamou-emergencia")
-			params = emergencia_context.get("parameters", {})
-			ajudar_mais = params.get("ajudar-mais", "")
-			if ajudar_mais == "sim":
-					response = utils.build_response(followupEventInput='MENU')
-			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 	elif id_intent == 'FAQ_AVC':
 			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-avc")
 			params = avc_context.get("parameters")
 			print("FAQ AVC????")
-			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "AVC", db, client)
-	elif id_intent == 'FAQ_DICAS':
-		print("DICAS")
-		avc_context = utils.get_specific_context(outputContexts, "perguntas-context-dicas")
-		params = avc_context.get("parameters")
-		response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "DICAS", db, client)			
-	elif id_intent == 'FAQ_POS_AVC':
-			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-pos-avc")
-			params = avc_context.get("parameters")
-			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "POS_AVC", db, client)
-	elif id_intent == 'FAQ_MEDICACAO':
-			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
-			params = avc_context.get("parameters")
-			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, "MEDICACAO", db, client)
+			response = utils.get_pergunta_from_lista(params, agent_name, sessionId, db)
 	elif id_intent == 'SOBRE_ISA':
 		context = utils.get_specific_context(outputContexts, "sobre-isa-context")
 		params = context.get("parameters")
@@ -216,33 +171,22 @@ def dialogflow_webhook():
 					response = utils.build_menu_perguntas(agent_name, sessionId, "AVC", db)
 			elif ajudar_mais == "não":
 					response = utils.build_response(followupEventInput='ENCERRAMENTO')
-	elif id_intent == 'FAQ_POS_AVC_RESPOSTA':
-			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-pos-avc")
-			params = avc_context.get("parameters")
-			ajudar_mais = params.get("escolha-ajudar-mais", "")
-			print("ajudar mais: {}".format(ajudar_mais))
+	elif id_intent == 'TRIAGEM_INICIO':
+			triagem_context = utils.get_specific_context(outputContexts, "inicio-triagem")
+			params = triagem_context.get("parameters", {})
+			escolha_triagem = params.get("escolha-triagem", "")
+			if escolha_triagem == "continuar":
+					response = utils.build_response(followupEventInput='TRIAGEM_SAMU')
+			elif escolha_triagem == "emergencia":
+					response = utils.build_response(followupEventInput='CHAMOU_EMERGENCIA')
+	elif id_intent == 'CHAMOU_EMERGENCIA':
+			emergencia_context = utils.get_specific_context(outputContexts, "chamou-emergencia")
+			params = emergencia_context.get("parameters", {})
+			ajudar_mais = params.get("ajudar-mais", "")
 			if ajudar_mais == "sim":
-					response = utils.build_menu_perguntas(agent_name, sessionId, "POS_AVC", db)
-			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='ENCERRAMENTO')
-	elif id_intent == 'FAQ_DICAS_RESPOSTA':
-			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-dicas")
-			params = avc_context.get("parameters")
-			ajudar_mais = params.get("escolha-ajudar-mais", "")
-			print("ajudar mais: {}".format(ajudar_mais))
-			if ajudar_mais == "sim":
-					response = utils.build_menu_perguntas(agent_name, sessionId, "DICAS", db)
+					response = utils.build_response(followupEventInput='MENU')
 			elif ajudar_mais == "não":
 					response = utils.build_response(followupEventInput='ENCERRAMENTO')					
-	elif id_intent == 'FAQ_MEDICACAO_RESPOSTA':
-			avc_context = utils.get_specific_context(outputContexts, "perguntas-context-medicacao")
-			params = avc_context.get("parameters")
-			ajudar_mais = params.get("escolha-ajudar-mais", "")
-			print("ajudar mais: {}".format(ajudar_mais))
-			if ajudar_mais == "sim":
-					response = utils.build_menu_perguntas(agent_name, sessionId, "MEDICACAO", db)
-			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 	elif id_intent == 'TRIAGEM_SAMU':
 			triagem_context = utils.get_specific_context(outputContexts, "triagem-followup")
 			params = triagem_context.get("parameters", {})
@@ -322,18 +266,7 @@ def dialogflow_webhook():
 			if ajudar_mais == "sim":
 					response = utils.build_response(followupEventInput='MENU')
 			elif ajudar_mais == "não":
-					response = utils.build_response(followupEventInput='ENCERRAMENTO')
-	elif id_intent == 'PESQUISA':
-			print("pesquisa de satisfação")
-			pesquisa_context = utils.get_specific_context(outputContexts, "pesquisa-satisfacao")
-			params = pesquisa_context.get("parameters", {})
-			pesquisa = params.get("pesquisa", "")
-			print("pesquisa: {}".format(pesquisa))
-			print("Pesquisa context")
-			print(pesquisa_context)
-			pergunta = database.get_last_msg(sessionId, db)
-			database.insert_pesquisa(sessionId, pergunta, pesquisa, db)
-			response = utils.build_response(followupEventInput='AJUDAR_MAIS')					
+					response = utils.build_response(followupEventInput='ENCERRAMENTO')				
 
 
 	print("RESPOSTA: {}".format(response))

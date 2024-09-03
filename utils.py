@@ -11,6 +11,8 @@ from difflib import SequenceMatcher
 from operator import itemgetter
 import re
 import string
+import google.generativeai as genai
+
 # Recupera sessionId do JSON de request do Dialogflow
 def get_session_id(req):
 	# LOGGER
@@ -182,7 +184,7 @@ def build_response(fulfillmentText="", followupEventInput="", outputContexts="",
 
 
 
-def build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = False):
+def build_menu_perguntas(agent_name, session_id, db, outros_list = False):
 
 	response = ""
 	nome_tipo_prestador = ""
@@ -192,16 +194,16 @@ def build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = Fals
 	perguntas = []
 	ids = []
 
-	n = int(database.get_parametro('PERGUNTAS_{}'.format(assunto), db))
-	total = int(database.get_parametro('TOTAL_PERGUNTAS_{}'.format(assunto), db))
-	ids_list =  database.get_faq_ids(db, assunto)
+	n = int(database.get_parametro('PERGUNTAS_AVC', db))
+	total = int(database.get_parametro('TOTAL_PERGUNTAS_AVC', db))
+	ids_list =  database.get_faq_ids(db)
 	sorteio = sorted(random.sample(ids_list, n))
 
 
 	nros_list = ','.join([str(i) for i in range(1,n+3)])
 	ids = ','.join([str(i) for i in sorteio])
 
-	perguntas = database.get_perguntas(assunto, db, ids)
+	perguntas = database.get_perguntas(db, ids)
 	perguntas.append('Outros assuntos.')
 	perguntas.append('Voltar ao menu')
 
@@ -222,21 +224,21 @@ def build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = Fals
 	params['response'] = response
 	params['menu_exemplos'] = menu_exemplos
 
-	new_context = utils.build_new_context(agent_name, session_id, "perguntas-context-{}".format(assunto.replace("_", "-").lower()), 5, context_params=params)
-	response = utils.build_response(followupEventInput='FAQ_{}'.format(assunto), outputContexts=new_context)
+	new_context = utils.build_new_context(agent_name, session_id, "perguntas-context-avc", 5, context_params=params)
+	response = utils.build_response(followupEventInput='FAQ_AVC', outputContexts=new_context)
 
 	return response
 
 
-def get_pergunta_from_lista(params, agent_name, session_id, assunto, db, client):
+def get_pergunta_from_lista(params, agent_name, session_id, db, client):
 
 	user_choice = params['user_choice_faq']
 	nros = params['nros_menu'].split(',')
 	nros = [int(x) for x in nros]
 	ids_perguntas = params['ids'].split(',')
 	if ('outr' in user_choice.lower() or 'assunto' in  user_choice.lower()):
-			new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 0)
-			response = build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = True)
+			new_context = build_new_context(agent_name, session_id, "avc-info-followup", 0)
+			response = build_menu_perguntas(agent_name, session_id, db, outros_list = True)
 
 	if ('menu' in user_choice.lower() or 'voltar' in  user_choice.lower()):
 			response = utils.build_response(followupEventInput='MENU')			
@@ -247,44 +249,105 @@ def get_pergunta_from_lista(params, agent_name, session_id, assunto, db, client)
 					if nro and nro in nros:
 							id = ids_perguntas[nro-1]
 							if id == 'X':
-									event = '{}_FAQ'.format(assunto)
-									new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 100, context_params=params)
-									response = build_menu_perguntas(agent_name, session_id, assunto, db, outros_list = True)
+									event = 'AVC_FAQ'
+									new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
+									response = build_menu_perguntas(agent_name, session_id, "AVC", db, outros_list = True)
 							elif id == 'Y':
 									response = utils.build_response(followupEventInput='MENU')								
 							else:
 									params = {}
-									resposta_faq = database.get_resposta(id, assunto, db)
-									if assunto == "DICAS":
-										link_faq = database.get_link_FAQ(id, assunto, db)
-										resposta_faq = resposta_faq + "\nAcesse esse conteúdo completo em: " + link_faq
-									pergunta_faq = database.get_perguntas(assunto, db, id)
+									resposta_faq = database.get_resposta(id, db)
+									pergunta_faq = database.get_perguntas(db, id)
 									params['resposta_faq'] = resposta_faq.strip()
 									params['pergunta_faq'] = pergunta_faq[0].strip()
-									event = 'FAQ_{}_RESPOSTA'.format(assunto)
-									new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 100, context_params=params)
+									event = 'FAQ_AVC_RESPOSTA'
+									new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
 									response = build_response(followupEventInput=event, outputContexts=new_context)
 					else:
 							# retry - número incorreto
-							response = build_response(followupEventInput='FAQ_{}'.format(assunto))
+							response = build_response(followupEventInput='FAQ_AVC')
 			except ValueError as e:
 					# busca por texto
 					#id = database.get_faq_id_from_ent(user_choice, assunto, db)
 					#pergunta_faq = check_similaridade_perguntas(user_choice, assunto, db)
-					lista_txt = database.get_lista_perguntas(assunto, db)
-					id = get_resposta_gpt(user_choice, lista_txt, client)
+					lista_txt = database.get_lista_perguntas(db)
+					id = get_pergunta_gemini(user_choice, lista_txt, client)
 					if id:
-							resposta_faq = database.get_resposta(id, assunto, db)
-							pergunta_faq = database.get_pergunta(id, assunto, db)
+							resposta_faq = database.get_resposta(id, db)
+							pergunta_faq = database.get_pergunta(id, db)
 							params = {}
 							params['resposta_faq'] = resposta_faq
 							params['pergunta_faq'] = pergunta_faq
-							new_context = build_new_context(agent_name, session_id, "{}-info-followup".format(assunto.replace("_", "-").lower()), 100, context_params=params)
-							response = build_response(followupEventInput='FAQ_{}_RESPOSTA'.format(assunto), outputContexts=new_context)
+							new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
+							response = build_response(followupEventInput='FAQ_AVC_RESPOSTA', outputContexts=new_context)
 					else:
-							response = build_response(followupEventInput='FAQ_{}'.format(assunto))
+							response = build_response(followupEventInput='FAQ_AVC')
 
 	return response
+
+
+
+def resposta_faq(pergunta, db, agent_name, session_id, sessions):
+	# busca por texto
+	#id = database.get_faq_id_from_ent(user_choice, assunto, db)
+	#pergunta_faq = check_similaridade_perguntas(user_choice, assunto, db)
+	session = random.choice(sessions)
+	id = get_pergunta_gemini(pergunta, session)
+	if id:
+			resposta_faq = database.get_resposta(id, db)
+			pergunta_faq = database.get_pergunta(id, db)
+			params = {}
+			params['resposta_faq'] = resposta_faq
+			params['pergunta_faq'] = pergunta_faq
+			new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
+			response = build_response(followupEventInput='FAQ_AVC_RESPOSTA', outputContexts=new_context)
+	else:
+			print("erro??")
+			#response = build_response(followupEventInput='FAQ'.format(assunto))	
+
+	return response
+
+
+def init_gemini_session(api_key, db):
+
+	genai.configure(api_key = api_key)
+
+	# Create the model
+	generation_config = {
+	"temperature": 0.9,
+	"top_p": 1,
+	"max_output_tokens": 2048,
+	"response_mime_type": "text/plain",
+	}
+
+	model = genai.GenerativeModel(
+	model_name="gemini-1.0-pro",
+	generation_config=generation_config,
+	# safety_settings = Adjust safety settings
+	# See https://ai.google.dev/gemini-api/docs/safety-settings
+	)
+	init_msg = database.get_init_text(db)
+	#lista_txt = database.get_lista_perguntas(db)
+	chat_session = model.start_chat(
+		history=[
+			{'role': 'user', 'parts': [init_msg]}
+		]
+	)  
+	return chat_session
+
+
+def generate_gemini_sessions(db):
+	#select key from 
+	keys = database.get_gemini_keys(db)
+	sessions = []
+	for key in keys:
+		session = init_gemini_session(key, db)
+		sessions.append(session)
+	
+	return sessions
+
+    
+	
 
 
 #def check_similaridade_perguntas(user_query, assunto, db):
@@ -379,22 +442,17 @@ def extrair_algarismos(string):
                 return None
 
 
-def get_resposta_gpt(entrada, lista_txt, client):
+def get_pergunta_gemini(entrada, db):
 
+	keys = database.get_gemini_keys(db)
+	chat_session = init_gemini_session(random.choice(keys), db)
+	#usa uma das instancias do gemini (já instanciadas) e retorna a mensagem mais adequada
+	message = "e se a pergunta for"+entrada+"?"
 
-    message = "considerando as seguintes opções (entre colchetes):"+lista_txt+"qual se assemelha mais com a entrada: "+entrada+"? retorne como resposta APENAS o número da pergunta que melhor corresponde"
+	response = chat_session.send_message(message)
 
-    # Imprime o número atual
-    print("Consultando GPT, entrada: {}".format(entrada))
-    response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": message}]
-    )
-    resposta = response.choices[0].message.content
-    print("Consultando GPT, resposta: {}".format(resposta))
-    resposta = extrair_algarismos(resposta)
+	resposta = response.text
 
-	
-    return resposta
+	return resposta
 
 
