@@ -110,13 +110,9 @@ def dialogflow_webhook():
 			elif escolha != '':
 					#fallback normal, aceito pela entidade
 					print("Escolha não vazia!!!!!!!")
-					_, count = database.update_fallback_count(sessionId,db, reset=False)
-					print("CONTAGEM FALLBACK: {}".format(count))
-					print("LIMITE FALLBACK: {}".format(limite_fallback))
-					if count >= int(limite_fallback):
-							response = utils.build_response(followupEventInput='TRANSBORDO')
-					else:
-							response = utils.build_response(followupEventInput='MENU_RETRY')
+					#chamar GPT
+					response = utils.resposta_faq (escolha, db, agent_name, sessionId)
+					response = utils.build_response(followupEventInput='MENU_RETRY')
 			else:
 					# não foi aceito pela entidade, entrou por evento ou entrou na funcionalidade por gatilho
 					print("Escolha vazia!!!!!!!")
