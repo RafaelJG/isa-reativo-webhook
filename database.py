@@ -333,7 +333,7 @@ def get_init_text(db):
 # Recupera a lista de mensagens dado um ID especifico
 def get_gemini_keys(db):
 	tabela = f"{DATABASE_NAME}.auth_gemini"
-	results = db.execute(f"""SELECT key FROM {tabela}""")
+	results = db.execute(f"""SELECT chave FROM {tabela}""")
 	keys = []
 	for row in results:
 			keys.append(row['key'])
