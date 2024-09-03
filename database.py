@@ -336,7 +336,7 @@ def get_gemini_keys(db):
 	results = db.execute(f"""SELECT chave FROM {tabela}""")
 	keys = []
 	for row in results:
-			keys.append(row['key'])
+			keys.append(row['chave'])
 
 	return keys
 
