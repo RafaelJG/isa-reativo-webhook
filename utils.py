@@ -202,7 +202,7 @@ def build_menu_perguntas(agent_name, session_id, db, outros_list = False):
 	print("IDS:{}".format(sorteio))
 	nros_list = ','.join([str(i) for i in range(1,n+3)])
 	ids = ','.join([str(i) for i in sorteio])
-
+	print(ids)
 	perguntas = database.get_perguntas(db, ids)
 	perguntas.append('Outros assuntos.')
 	perguntas.append('Voltar ao menu')
