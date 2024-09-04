@@ -230,7 +230,7 @@ def build_menu_perguntas(agent_name, session_id, db, outros_list = False):
 	return response
 
 
-def get_pergunta_from_lista(params, agent_name, session_id, db, client):
+def get_pergunta_from_lista(params, agent_name, session_id, db):
 
 	user_choice = params['user_choice_faq']
 	nros = params['nros_menu'].split(',')
