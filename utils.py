@@ -295,15 +295,14 @@ def resposta_faq(pergunta, db, agent_name, session_id):
 	if id:
 			if id != 0:
 				resposta_faq = database.get_resposta(id, db)
-				pergunta_faq = database.get_pergunta(id, db)
+				pergunta_faq = database.get_pergunta(id, db)			
+				params = {}
+				params['resposta_faq'] = resposta_faq
+				params['pergunta_faq'] = pergunta_faq
+				new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
+				response = build_response(followupEventInput='RESPOSTA_GEMINI', outputContexts=new_context)
 			else:
-				resposta_faq = "Desculpe, não entendi sua pergunta, pode reformular?"
-				pergunta_faq = ""				
-			params = {}
-			params['resposta_faq'] = resposta_faq
-			params['pergunta_faq'] = pergunta_faq
-			new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
-			response = build_response(followupEventInput='RESPOSTA_GEMINI', outputContexts=new_context)
+				response = utils.build_response(followupEventInput="FALLBACK_FAQ")
 	else:
 			print("erro??")
 			#response = build_response(followupEventInput='FAQ'.format(assunto))	
