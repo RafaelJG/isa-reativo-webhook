@@ -199,14 +199,14 @@ def build_menu_perguntas(agent_name, session_id, db, outros_list = False):
 	ids_list =  database.get_faq_ids(db)
 	sorteio = sorted(random.sample(ids_list, n))
 
-
+	print("IDS:{}".format(ids))
 	nros_list = ','.join([str(i) for i in range(1,n+3)])
 	ids = ','.join([str(i) for i in sorteio])
 
 	perguntas = database.get_perguntas(db, ids)
 	perguntas.append('Outros assuntos.')
 	perguntas.append('Voltar ao menu')
-
+	print("PERGUNTAS: {}".format(perguntas))
 	#if outros_list:
 	header_exemplos = "Estes são alguns assuntos que posso te responder:"
 	#else: header_exemplos = str(random.choice(database.get_bot_messages('{}_INFORMACOES'.format(assunto), db)))
