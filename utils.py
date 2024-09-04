@@ -304,7 +304,7 @@ def resposta_faq(pergunta, db, agent_name, session_id):
 			params['nros_menu'] = 'nros_list'
 			params['header'] = 'header_exemplos'
 			params['response'] = 'response'
-			params['menu_exemplos'] = menu_exemplos
+			params['menu_exemplos'] = 'menu_exemplos'
 
 			new_context2 = utils.build_new_context(agent_name, session_id, "perguntas-context-avc", 5, context_params=params)
 			response = build_response(followupEventInput='FAQ_AVC_RESPOSTA', outputContexts=[new_context, new_context2])
