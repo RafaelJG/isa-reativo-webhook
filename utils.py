@@ -199,7 +199,7 @@ def build_menu_perguntas(agent_name, session_id, db, outros_list = False):
 	ids_list =  database.get_faq_ids(db)
 	sorteio = sorted(random.sample(ids_list, n))
 
-	print("IDS:{}".format(ids))
+	print("IDS:{}".format(sorteio))
 	nros_list = ','.join([str(i) for i in range(1,n+3)])
 	ids = ','.join([str(i) for i in sorteio])
 
