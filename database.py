@@ -203,6 +203,7 @@ def get_perguntas(db, ids=0):
 
 def get_resposta(id, db):
 	tabela = f"{DATABASE_NAME}.chat_faq_todos"
+	print("SELECT resposta FROM {tabela} where id = {id}")
 	result = db.execute(f"SELECT resposta FROM {tabela} where id = {id}")
 	resposta = ""
 	for row in result:

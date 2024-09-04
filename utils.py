@@ -299,15 +299,7 @@ def resposta_faq(pergunta, db, agent_name, session_id):
 			params['resposta_faq'] = resposta_faq
 			params['pergunta_faq'] = pergunta_faq
 			new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
-			params = {}
-			params['ids'] = 'dsa'
-			params['nros_menu'] = 'nros_list'
-			params['header'] = 'header_exemplos'
-			params['response'] = 'response'
-			params['menu_exemplos'] = 'menu_exemplos'
-
-			new_context2 = utils.build_new_context(agent_name, session_id, "perguntas-context-avc", 5, context_params=params)
-			response = build_response(followupEventInput='FAQ_AVC_RESPOSTA', outputContexts=[new_context, new_context2])
+			response = build_response(followupEventInput='FAQ_AVC_RESPOSTA', outputContexts=new_context)
 	else:
 			print("erro??")
 			#response = build_response(followupEventInput='FAQ'.format(assunto))	
@@ -450,16 +442,16 @@ def extrair_algarismos(string):
 
 
 def get_pergunta_gemini(entrada, db):
-
-	keys = database.get_gemini_keys(db)
-	chat_session = init_gemini_session(random.choice(keys), db)
-	#usa uma das instancias do gemini (já instanciadas) e retorna a mensagem mais adequada
-	message = "e se a pergunta for"+entrada+"?"
-
-	response = chat_session.send_message(message)
-
-	resposta = response.text
-
+	try:
+		keys = database.get_gemini_keys(db)
+		chat_session = init_gemini_session(random.choice(keys), db)
+		#usa uma das instancias do gemini (já instanciadas) e retorna a mensagem mais adequada
+		message = "e se a pergunta for"+entrada+"?"
+		response = chat_session.send_message(message)
+		resposta = response.text
+		print("Pergunta: {}, Resposta: {}".format(message, resposta))
+	except:
+		print("erro")
 	return resposta
 
 
