@@ -251,7 +251,7 @@ def get_pergunta_from_lista(params, agent_name, session_id, db):
 							if id == 'X':
 									event = 'AVC_FAQ'
 									new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
-									response = build_menu_perguntas(agent_name, session_id, "AVC", db, outros_list = True)
+									response = build_menu_perguntas(agent_name, session_id, db,outros_list = True)
 							elif id == 'Y':
 									response = utils.build_response(followupEventInput='MENU')								
 							else:
