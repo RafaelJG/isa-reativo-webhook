@@ -293,8 +293,12 @@ def resposta_faq(pergunta, db, agent_name, session_id):
 	
 	id = get_pergunta_gemini(pergunta, db)
 	if id:
-			resposta_faq = database.get_resposta(id, db)
-			pergunta_faq = database.get_pergunta(id, db)
+			if id != 0:
+				resposta_faq = database.get_resposta(id, db)
+				pergunta_faq = database.get_pergunta(id, db)
+			else:
+				resposta_faq = "Desculpe, não entendi sua pergunta, pode reformular?"
+				pergunta_faq = ""				
 			params = {}
 			params['resposta_faq'] = resposta_faq
 			params['pergunta_faq'] = pergunta_faq
