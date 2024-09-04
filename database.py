@@ -189,7 +189,7 @@ def get_bot_messages(id_message, db):
 
 # Retorna as perguntas do faq do coronavírus de acordo com os ids informados
 def get_perguntas(db, ids=0):
-	tabela = f"{DATABASE_NAME}.chat_faq_avc"
+	tabela = f"{DATABASE_NAME}.chat_faq_todos"
 	if ids:
 			result = db.execute(f"SELECT pergunta FROM {tabela} where id in ({ids})")
 	else:
