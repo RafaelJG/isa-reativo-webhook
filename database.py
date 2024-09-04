@@ -313,7 +313,7 @@ def get_api_url(id_api, db):
 
 
 def get_lista_perguntas(db):
-	tabela = f"{DATABASE_NAME}.chat_faq_avc"
+	tabela = f"{DATABASE_NAME}.chat_faq_todos"
 	result = db.execute(f"SELECT id, pergunta FROM {tabela}")
 	# Converte a tupla para a lista no formato desejado
 	lista_formatada = [f"{item[0]} - {item[1]}" for item in result]
