@@ -446,10 +446,13 @@ def get_pergunta_gemini(entrada, db):
 		keys = database.get_gemini_keys(db)
 		chat_session = init_gemini_session(random.choice(keys), db)
 		#usa uma das instancias do gemini (já instanciadas) e retorna a mensagem mais adequada
-		message = "e se a pergunta for"+entrada+"?"
+		message = "e se a pergunta for "+entrada+"?"
 		response = chat_session.send_message(message)
 		resposta = response.text
 		print("Pergunta: {}, Resposta: {}".format(message, resposta))
+
+
+		print("HISTORICO:{} ".format(chat_session.history))
 	except:
 		print("erro")
 	return resposta
