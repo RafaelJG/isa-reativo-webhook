@@ -167,7 +167,7 @@ def dialogflow_webhook():
 			ajudar_mais = params.get("escolha-ajudar-mais", "")
 			print("ajudar mais: {}".format(ajudar_mais))
 			if ajudar_mais == "sim":
-					response = utils.build_menu_perguntas(agent_name, sessionId, "AVC", db)
+					response = utils.build_menu_perguntas(agent_name, sessionId, db)
 			elif ajudar_mais == "não":
 					response = utils.build_response(followupEventInput='ENCERRAMENTO')
 	elif id_intent == 'FAQ_AVC_RESPOSTA_GEMINI':

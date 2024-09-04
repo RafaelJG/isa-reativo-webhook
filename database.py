@@ -70,9 +70,7 @@ def get_last_msg(session_id, db):
 
 
 def get_faq_ids(db):
-	tabela = f"{DATABASE_NAME}.chat_faq_avc"
-
-
+	tabela = f"{DATABASE_NAME}.chat_faq_todos"
 	sql_txt = f"SELECT id FROM {tabela}"
 	result = db.execute(sql_txt)
 	ids =[]
