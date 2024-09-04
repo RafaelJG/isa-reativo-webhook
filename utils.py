@@ -293,7 +293,7 @@ def resposta_faq(pergunta, db, agent_name, session_id):
 	
 	id = get_pergunta_gemini(pergunta, db)
 	if id:
-			if id != 0:
+			if id != '0':
 				resposta_faq = database.get_resposta(id, db)
 				pergunta_faq = database.get_pergunta(id, db)			
 				params = {}
