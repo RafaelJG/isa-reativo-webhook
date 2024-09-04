@@ -299,7 +299,7 @@ def resposta_faq(pergunta, db, agent_name, session_id):
 			params['resposta_faq'] = resposta_faq
 			params['pergunta_faq'] = pergunta_faq
 			new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
-			response = build_response(followupEventInput='FAQ_AVC_RESPOSTA', outputContexts=new_context)
+			response = build_response(followupEventInput='RESPOSTA_GEMINI', outputContexts=new_context)
 	else:
 			print("erro??")
 			#response = build_response(followupEventInput='FAQ'.format(assunto))	
