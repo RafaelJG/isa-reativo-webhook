@@ -300,7 +300,7 @@ def resposta_faq(pergunta, db, agent_name, session_id):
 			params['pergunta_faq'] = pergunta_faq
 			new_context = build_new_context(agent_name, session_id, "avc-info-followup", 100, context_params=params)
 			params = {}
-			params['ids'] = ids + ',X' + ',Y'
+			params['ids'] = 'dsa'
 			params['nros_menu'] = 'nros_list'
 			params['header'] = 'header_exemplos'
 			params['response'] = 'response'
