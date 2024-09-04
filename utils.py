@@ -458,7 +458,7 @@ def get_pergunta_gemini(entrada, db):
 		print("HISTORICO:{} ".format(chat_session.history))
 	except Exception as e:
 		print("erro: {}".format(e))
-		resposta = 0
+		resposta = '0'
 	return resposta
 
 
